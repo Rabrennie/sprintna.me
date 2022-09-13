@@ -11,7 +11,7 @@ class JoinedRoomMessage extends BaseMessage {
     }
 
     getMessageData() {
-        return { ...this.room, users: this.room.users.map((u) => ({ id: u.id, name: u.name })) };
+        return { ...this.room, selections: Object.fromEntries(this.room.selections), users: this.room.users.map((u) => ({ id: u.id, name: u.name })) };
     }
 }
 

@@ -1,10 +1,8 @@
-// import Server from "./networking/Server";
-
-// const server = new Server(4321);
-
-// server.start();
 import glob from 'glob'
 import Server from './networking/Server';
+import { config } from 'dotenv';
+
+config();
 
 const globby = async(path: string): Promise<Array<string>> => {
     return new Promise((resolve) => {
