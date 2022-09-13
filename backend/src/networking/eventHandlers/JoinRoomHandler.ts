@@ -20,6 +20,9 @@ class JoinRoomHandler extends ServerEvent.ServerEventHandler {
 
         if (!room.users.some((u) => u.id === user.id)) {
             room.users.push(user);
+        } else {
+            const index = room.users.findIndex((u) => u.id === user.id);
+            room.users[index] = user;
         }
 
         user.room = room;

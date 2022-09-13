@@ -13,7 +13,9 @@ class Room {
     }
 
     broadcast(message: object) {
-        this.users.forEach((u) => u.socket.send(JSON.stringify(message)));
+        this.users.forEach((u) => {
+            u.socket.send(JSON.stringify(message))
+        });
     }
 }
 

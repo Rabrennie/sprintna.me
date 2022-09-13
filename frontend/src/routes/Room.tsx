@@ -11,12 +11,13 @@ export default function Room() {
 
     const { sendJsonMessage, lastJsonMessage } = useWebSocket(`ws://localhost:4321/${token ? '?token=' + token : ''}`, {share: true});
 
-    const { roomName, setRoomName, setRoomId, roomUsers, setRoomUsers } = useRoomStore((state) => ({
+    const { roomName, setRoomName, setRoomId, roomUsers, setRoomUsers, addRoomUser} = useRoomStore((state) => ({
         roomName: state.name,
         roomUsers: state.users,
         setRoomName: state.setName,
         setRoomId: state.setId,
         setRoomUsers: state.setUsers,
+        addRoomUser: state.addRoomUser,
     }));
 
     useEffect(() => {
@@ -26,7 +27,12 @@ export default function Room() {
             setRoomName((lastJsonMessage as any).data.name);
             setRoomUsers((lastJsonMessage as any).data.users);
         }
-    }, [lastJsonMessage, setRoomName, setRoomUsers]);
+
+        if ((lastJsonMessage as any)?.type === 'user-joined') {
+            addRoomUser((lastJsonMessage as any).data);
+        }
+
+    }, [lastJsonMessage, setRoomName, setRoomUsers, addRoomUser]);
 
     useEffect(() => {
         setRoomId(id || '');
