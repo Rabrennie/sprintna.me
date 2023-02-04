@@ -1,3 +1,5 @@
+import User from "./User";
+
 export enum RoomState {
     SELECTING = 'selecting',
     ELIMINATING = 'eliminating',
@@ -14,6 +16,6 @@ export default interface Room {
     name: string;
     state: RoomState;
     id: string;
-    users: string[];
+    users: User[];
     choices: { [key: string]: Choice };
 }

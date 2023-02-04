@@ -3,7 +3,7 @@ import { Socket as ClientSocket, io as ioClient } from 'socket.io-client';
 import ClientToServerEvents from '../../common/ClientToServerEvents';
 import Room, { RoomState } from '../../common/Room';
 import ServerToClientEvents from '../../common/ServerToClientEvents';
-import { io, rooms } from '../src/server';
+import { io, rooms, sessions } from '../src/server';
 
 jest.mock('crypto', () => {
     return {
@@ -11,6 +11,7 @@ jest.mock('crypto', () => {
             Buffer.from([0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x09, 0x10, 0x11, 0x12, 0x13, 0x14, 0x15, 0x16]),
         ),
         randomInt: jest.fn(() => 0),
+        randomUUID: jest.fn(() => '76b0aaa6-7988-435d-85cf-e7235f0cd622'),
     };
 });
 
@@ -19,13 +20,49 @@ describe('sprintna.me websocket server', () => {
 
     beforeEach((done) => {
         io.listen(3000);
-        clientSocket = ioClient(`http://localhost:${3000}`);
+        clientSocket = ioClient(`http://localhost:${3000}`, {
+            auth: {
+                token: '1234',
+                name: 'test',
+            },
+        });
         clientSocket.on('connect', done);
     });
 
     afterEach(() => {
         clientSocket.close();
         io.close();
+    });
+
+    describe('on connect', () => {
+        test('should emit session event', (done) => {
+            const testSocket = ioClient(`http://localhost:${3000}`, {
+                auth: {
+                    token: 'abcdef',
+                    name: 'test',
+                },
+            });
+            testSocket.on('session', (user) => {
+                expect(user).toEqual({ id: '76b0aaa6-7988-435d-85cf-e7235f0cd622', name: 'test' });
+                testSocket.close();
+                done();
+            });
+        });
+
+        test('should emit session event with existing user', (done) => {
+            sessions['abcdef'] = { id: 'wowanid', name: 'aaaaa' };
+            const testSocket = ioClient(`http://localhost:${3000}`, {
+                auth: {
+                    token: 'abcdef',
+                    name: 'test',
+                },
+            });
+            testSocket.on('session', (user) => {
+                expect(user).toEqual({ id: 'wowanid', name: 'test' });
+                testSocket.close();
+                done();
+            });
+        });
     });
 
     describe('room:create', () => {
@@ -35,7 +72,7 @@ describe('sprintna.me websocket server', () => {
                     id: 'AQIDBAUGCRAREhMUFRY',
                     state: RoomState.SELECTING,
                     name: 'my room',
-                    users: [clientSocket.id],
+                    users: [{ id: '76b0aaa6-7988-435d-85cf-e7235f0cd622', name: 'test' }],
                     choices: {},
                 });
                 done();
@@ -49,7 +86,7 @@ describe('sprintna.me websocket server', () => {
                         id: 'AQIDBAUGCRAREhMUFRY',
                         state: RoomState.SELECTING,
                         name: 'my room',
-                        users: [clientSocket.id],
+                        users: [{ id: '76b0aaa6-7988-435d-85cf-e7235f0cd622', name: 'test' }],
                         choices: {},
                     },
                 });
@@ -87,7 +124,7 @@ describe('sprintna.me websocket server', () => {
                     id: roomId,
                     state: RoomState.SELECTING,
                     name: 'a very cool room',
-                    users: [clientSocket.id],
+                    users: [{ id: '76b0aaa6-7988-435d-85cf-e7235f0cd622', name: 'test' }],
                     choices: {},
                 });
                 done();
@@ -103,7 +140,7 @@ describe('sprintna.me websocket server', () => {
 
         test('should update user list of room', (done) => {
             clientSocket.emit('room:join', roomId, (room) => {
-                expect(rooms[roomId].users).toEqual([clientSocket.id]);
+                expect(rooms[roomId].users).toEqual([{ id: '76b0aaa6-7988-435d-85cf-e7235f0cd622', name: 'test' }]);
                 done();
             });
         });
@@ -111,7 +148,7 @@ describe('sprintna.me websocket server', () => {
         test('should emit room:users:update', (done) => {
             clientSocket.on('room:users:update', (id, users) => {
                 expect(id).toEqual(roomId);
-                expect(users).toEqual([clientSocket.id]);
+                expect(users).toEqual([{ id: '76b0aaa6-7988-435d-85cf-e7235f0cd622', name: 'test' }]);
                 done();
             });
 
@@ -143,10 +180,10 @@ describe('sprintna.me websocket server', () => {
             test('should set users choice in room', (done) => {
                 clientSocket.emit('room:album:select', roomId, 'abcdef123', () => {
                     expect(rooms[roomId].choices).toEqual({
-                        [clientSocket.id]: {
+                        ['76b0aaa6-7988-435d-85cf-e7235f0cd622']: {
                             choice: 'abcdef123',
                             eliminated: false,
-                            user: clientSocket.id,
+                            user: '76b0aaa6-7988-435d-85cf-e7235f0cd622',
                         },
                     });
                     done();
@@ -157,10 +194,10 @@ describe('sprintna.me websocket server', () => {
                 clientSocket.on('room:choices:update', (id, choices) => {
                     expect(id).toEqual(roomId);
                     expect(choices).toEqual({
-                        [clientSocket.id]: {
+                        ['76b0aaa6-7988-435d-85cf-e7235f0cd622']: {
                             choice: 'abcdef123',
                             eliminated: false,
-                            user: clientSocket.id,
+                            user: '76b0aaa6-7988-435d-85cf-e7235f0cd622',
                         },
                     });
                     done();
@@ -199,11 +236,15 @@ describe('sprintna.me websocket server', () => {
                 id: roomId,
                 state: RoomState.SELECTING,
                 name: 'a very cool room',
-                users: ['123', '456', clientSocket.id],
+                users: [
+                    { id: '123', name: '123' },
+                    { id: '456', name: '456' },
+                    { id: '76b0aaa6-7988-435d-85cf-e7235f0cd622', name: clientSocket.id },
+                ],
                 choices: {
                     '123': { user: '123', choice: 'abc', eliminated: false },
                     '456': { user: '456', choice: 'def', eliminated: false },
-                    [clientSocket.id]: { user: clientSocket.id, choice: 'ghi', eliminated: false },
+                    ['76b0aaa6-7988-435d-85cf-e7235f0cd622']: { user: '76b0aaa6-7988-435d-85cf-e7235f0cd622', choice: 'ghi', eliminated: false },
                 },
             };
 
@@ -268,11 +309,15 @@ describe('sprintna.me websocket server', () => {
                 id: roomId,
                 state: RoomState.SELECTING,
                 name: 'a very cool room',
-                users: ['123', '456', clientSocket.id],
+                users: [
+                    { id: '123', name: '123' },
+                    { id: '456', name: '456' },
+                    { id: '76b0aaa6-7988-435d-85cf-e7235f0cd622', name: clientSocket.id },
+                ],
                 choices: {
                     '123': { user: '123', choice: 'abc', eliminated: false },
                     '456': { user: '456', choice: 'def', eliminated: false },
-                    [clientSocket.id]: { user: clientSocket.id, choice: 'ghi', eliminated: false },
+                    ['76b0aaa6-7988-435d-85cf-e7235f0cd622']: { user: '76b0aaa6-7988-435d-85cf-e7235f0cd622', choice: 'ghi', eliminated: false },
                 },
             };
 
