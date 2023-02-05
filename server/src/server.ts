@@ -77,13 +77,13 @@ io.on('connection', (socket) => {
         callback(rooms[roomId]);
     });
 
-    socket.on('room:album:select', (roomId, albumId, callback) => {
+    socket.on('room:album:select', (roomId, album, callback) => {
         const room = rooms[roomId];
 
         if (room.state == RoomState.SELECTING) {
             room.choices[(socket.data.user as User).id] = {
                 user: (socket.data.user as User).id,
-                choice: albumId,
+                choice: album,
                 eliminated: false,
             };
             io.to(roomId).emit('room:choices:update', roomId, room.choices);

@@ -188,16 +188,31 @@ describe('sprintna.me websocket server', () => {
             });
 
             test('should set users choice in room', (done) => {
-                clientSocket.emit('room:album:select', roomId, 'abcdef123', () => {
-                    expect(rooms[roomId].choices).toEqual({
-                        ['76b0aaa6-7988-435d-85cf-e7235f0cd622']: {
-                            choice: 'abcdef123',
-                            eliminated: false,
-                            user: '76b0aaa6-7988-435d-85cf-e7235f0cd622',
-                        },
-                    });
-                    done();
-                });
+                clientSocket.emit(
+                    'room:album:select',
+                    roomId,
+                    {
+                        artist: 'Artist A',
+                        title: 'Song Title A',
+                        url: 'https://example.com',
+                        imageUrl: 'https://example.com',
+                    },
+                    () => {
+                        expect(rooms[roomId].choices).toEqual({
+                            ['76b0aaa6-7988-435d-85cf-e7235f0cd622']: {
+                                choice: {
+                                    artist: 'Artist A',
+                                    title: 'Song Title A',
+                                    url: 'https://example.com',
+                                    imageUrl: 'https://example.com',
+                                },
+                                eliminated: false,
+                                user: '76b0aaa6-7988-435d-85cf-e7235f0cd622',
+                            },
+                        });
+                        done();
+                    },
+                );
             });
 
             test('should emit room:choices:update', (done) => {
@@ -205,7 +220,12 @@ describe('sprintna.me websocket server', () => {
                     expect(id).toEqual(roomId);
                     expect(choices).toEqual({
                         ['76b0aaa6-7988-435d-85cf-e7235f0cd622']: {
-                            choice: 'abcdef123',
+                            choice: {
+                                artist: 'Artist A',
+                                title: 'Song Title A',
+                                url: 'https://example.com',
+                                imageUrl: 'https://example.com',
+                            },
                             eliminated: false,
                             user: '76b0aaa6-7988-435d-85cf-e7235f0cd622',
                         },
@@ -213,7 +233,17 @@ describe('sprintna.me websocket server', () => {
                     done();
                 });
 
-                clientSocket.emit('room:album:select', roomId, 'abcdef123', () => {});
+                clientSocket.emit(
+                    'room:album:select',
+                    roomId,
+                    {
+                        artist: 'Artist A',
+                        title: 'Song Title A',
+                        url: 'https://example.com',
+                        imageUrl: 'https://example.com',
+                    },
+                    () => {},
+                );
             });
         });
 
@@ -223,16 +253,36 @@ describe('sprintna.me websocket server', () => {
             });
 
             test('should not set users choice in room', (done) => {
-                clientSocket.emit('room:album:select', roomId, 'abcdef123', () => {
-                    expect(rooms[roomId].choices).toEqual({});
-                    done();
-                });
+                clientSocket.emit(
+                    'room:album:select',
+                    roomId,
+                    {
+                        artist: 'Artist A',
+                        title: 'Song Title A',
+                        url: 'https://example.com',
+                        imageUrl: 'https://example.com',
+                    },
+                    () => {
+                        expect(rooms[roomId].choices).toEqual({});
+                        done();
+                    },
+                );
             });
 
             test.skip('should not emit room:choices:update', () => {
                 clientSocket.on('room:choices:update', () => {});
 
-                clientSocket.emit('room:album:select', roomId, 'abcdef123', () => {});
+                clientSocket.emit(
+                    'room:album:select',
+                    roomId,
+                    {
+                        artist: 'Artist A',
+                        title: 'Song Title A',
+                        url: 'https://example.com',
+                        imageUrl: 'https://example.com',
+                    },
+                    () => {},
+                );
             });
         });
     });
@@ -252,11 +302,34 @@ describe('sprintna.me websocket server', () => {
                     { id: '76b0aaa6-7988-435d-85cf-e7235f0cd622', name: clientSocket.id },
                 ],
                 choices: {
-                    '123': { user: '123', choice: 'abc', eliminated: false },
-                    '456': { user: '456', choice: 'def', eliminated: false },
+                    '123': {
+                        user: '123',
+                        choice: {
+                            artist: 'Artist A',
+                            title: 'Song Title A',
+                            url: 'https://example.com',
+                            imageUrl: 'https://example.com',
+                        },
+                        eliminated: false,
+                    },
+                    '456': {
+                        user: '456',
+                        choice: {
+                            artist: 'Artist B',
+                            title: 'Song Title B',
+                            url: 'https://example.com',
+                            imageUrl: 'https://example.com',
+                        },
+                        eliminated: false,
+                    },
                     ['76b0aaa6-7988-435d-85cf-e7235f0cd622']: {
                         user: '76b0aaa6-7988-435d-85cf-e7235f0cd622',
-                        choice: 'ghi',
+                        choice: {
+                            artist: 'Artist C',
+                            title: 'Song Title C',
+                            url: 'https://example.com',
+                            imageUrl: 'https://example.com',
+                        },
                         eliminated: false,
                     },
                 },
@@ -273,7 +346,16 @@ describe('sprintna.me websocket server', () => {
             test('should emit room:ablum:eliminated', (done) => {
                 clientSocket.on('room:album:eliminated', (id, eliminated) => {
                     expect(id).toEqual(roomId);
-                    expect(eliminated).toEqual({ user: '123', choice: 'abc', eliminated: true });
+                    expect(eliminated).toEqual({
+                        user: '123',
+                        choice: {
+                            artist: 'Artist A',
+                            title: 'Song Title A',
+                            url: 'https://example.com',
+                            imageUrl: 'https://example.com',
+                        },
+                        eliminated: true,
+                    });
                     done();
                 });
 
@@ -329,11 +411,34 @@ describe('sprintna.me websocket server', () => {
                     { id: '76b0aaa6-7988-435d-85cf-e7235f0cd622', name: clientSocket.id },
                 ],
                 choices: {
-                    '123': { user: '123', choice: 'abc', eliminated: false },
-                    '456': { user: '456', choice: 'def', eliminated: false },
+                    '123': {
+                        user: '123',
+                        choice: {
+                            artist: 'Artist A',
+                            title: 'Song Title A',
+                            url: 'https://example.com',
+                            imageUrl: 'https://example.com',
+                        },
+                        eliminated: false,
+                    },
+                    '456': {
+                        user: '456',
+                        choice: {
+                            artist: 'Artist B',
+                            title: 'Song Title B',
+                            url: 'https://example.com',
+                            imageUrl: 'https://example.com',
+                        },
+                        eliminated: false,
+                    },
                     ['76b0aaa6-7988-435d-85cf-e7235f0cd622']: {
                         user: '76b0aaa6-7988-435d-85cf-e7235f0cd622',
-                        choice: 'ghi',
+                        choice: {
+                            artist: 'Artist C',
+                            title: 'Song Title C',
+                            url: 'https://example.com',
+                            imageUrl: 'https://example.com',
+                        },
                         eliminated: false,
                     },
                 },

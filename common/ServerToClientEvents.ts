@@ -1,5 +1,5 @@
-import { Choice, RoomState } from "./Room";
-import User from './User';
+import type { Choice, RoomState } from "./Room";
+import type User from './User';
 
 export default interface ServerToClientEvents {
     'room:users:update': (id: string, users: User[]) => void;

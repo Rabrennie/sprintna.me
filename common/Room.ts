@@ -1,4 +1,4 @@
-import User from "./User";
+import type User from './User';
 
 export enum RoomState {
     SELECTING = 'selecting',
@@ -6,9 +6,16 @@ export enum RoomState {
     FINISHED = 'finished',
 }
 
+export interface Album {
+    artist: string;
+    url: string;
+    imageUrl: string;
+    title: string;
+}
+
 export interface Choice {
-    user: string,
-    choice: string,
+    user: string;
+    choice: Album;
     eliminated: boolean;
 }
 
