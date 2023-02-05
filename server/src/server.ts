@@ -102,7 +102,7 @@ io.on('connection', (socket) => {
         const choices = Object.values(room.choices).filter((c) => !c.eliminated);
 
         if (choices.length >= 2) {
-            const choice = choices[crypto.randomInt(choices.length - 1)];
+            const choice = choices[crypto.randomInt(choices.length)];
             choice.eliminated = true;
             io.to(roomId).emit('room:album:eliminated', roomId, choice);
         }
