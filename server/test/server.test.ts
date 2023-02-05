@@ -15,12 +15,14 @@ jest.mock('crypto', () => {
     };
 });
 
+const PORT = 43210;
+
 describe('sprintna.me websocket server', () => {
     let clientSocket: ClientSocket<ServerToClientEvents, ClientToServerEvents>;
 
     beforeEach((done) => {
-        io.listen(3000);
-        clientSocket = ioClient(`http://localhost:${3000}`, {
+        io.listen(PORT);
+        clientSocket = ioClient(`http://localhost:${PORT}`, {
             auth: {
                 token: '1234',
                 name: 'test',
@@ -36,7 +38,7 @@ describe('sprintna.me websocket server', () => {
 
     describe('on connect', () => {
         test('should emit session event', (done) => {
-            const testSocket = ioClient(`http://localhost:${3000}`, {
+            const testSocket = ioClient(`http://localhost:${PORT}`, {
                 auth: {
                     token: 'abcdef',
                     name: 'test',
@@ -51,7 +53,7 @@ describe('sprintna.me websocket server', () => {
 
         test('should emit session event with existing user', (done) => {
             sessions['abcdef'] = { id: 'wowanid', name: 'aaaaa' };
-            const testSocket = ioClient(`http://localhost:${3000}`, {
+            const testSocket = ioClient(`http://localhost:${PORT}`, {
                 auth: {
                     token: 'abcdef',
                     name: 'test',
@@ -139,6 +141,14 @@ describe('sprintna.me websocket server', () => {
         });
 
         test('should update user list of room', (done) => {
+            clientSocket.emit('room:join', roomId, (room) => {
+                expect(rooms[roomId].users).toEqual([{ id: '76b0aaa6-7988-435d-85cf-e7235f0cd622', name: 'test' }]);
+                done();
+            });
+        });
+
+        test('should not update user list of room if user is already in room', (done) => {
+            rooms[roomId].users = [{ id: '76b0aaa6-7988-435d-85cf-e7235f0cd622', name: 'test' }];
             clientSocket.emit('room:join', roomId, (room) => {
                 expect(rooms[roomId].users).toEqual([{ id: '76b0aaa6-7988-435d-85cf-e7235f0cd622', name: 'test' }]);
                 done();
@@ -244,7 +254,11 @@ describe('sprintna.me websocket server', () => {
                 choices: {
                     '123': { user: '123', choice: 'abc', eliminated: false },
                     '456': { user: '456', choice: 'def', eliminated: false },
-                    ['76b0aaa6-7988-435d-85cf-e7235f0cd622']: { user: '76b0aaa6-7988-435d-85cf-e7235f0cd622', choice: 'ghi', eliminated: false },
+                    ['76b0aaa6-7988-435d-85cf-e7235f0cd622']: {
+                        user: '76b0aaa6-7988-435d-85cf-e7235f0cd622',
+                        choice: 'ghi',
+                        eliminated: false,
+                    },
                 },
             };
 
@@ -317,7 +331,11 @@ describe('sprintna.me websocket server', () => {
                 choices: {
                     '123': { user: '123', choice: 'abc', eliminated: false },
                     '456': { user: '456', choice: 'def', eliminated: false },
-                    ['76b0aaa6-7988-435d-85cf-e7235f0cd622']: { user: '76b0aaa6-7988-435d-85cf-e7235f0cd622', choice: 'ghi', eliminated: false },
+                    ['76b0aaa6-7988-435d-85cf-e7235f0cd622']: {
+                        user: '76b0aaa6-7988-435d-85cf-e7235f0cd622',
+                        choice: 'ghi',
+                        eliminated: false,
+                    },
                 },
             };
 

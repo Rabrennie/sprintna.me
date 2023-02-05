@@ -65,9 +65,15 @@ io.on('connection', (socket) => {
     });
 
     socket.on('room:join', (roomId, callback) => {
-        rooms[roomId].users.push(socket.data.user as User);
+        const room = rooms[roomId];
+
         socket.join(roomId);
-        io.to(roomId).emit('room:users:update', roomId, rooms[roomId].users);
+
+        if (!room.users.find((u) => u.id === (socket.data.user as User).id)) {
+            room.users.push(socket.data.user as User);
+            io.to(roomId).emit('room:users:update', roomId, room.users);
+        }
+
         callback(rooms[roomId]);
     });
 
@@ -75,7 +81,11 @@ io.on('connection', (socket) => {
         const room = rooms[roomId];
 
         if (room.state == RoomState.SELECTING) {
-            room.choices[(socket.data.user as User).id] = { user: (socket.data.user as User).id, choice: albumId, eliminated: false };
+            room.choices[(socket.data.user as User).id] = {
+                user: (socket.data.user as User).id,
+                choice: albumId,
+                eliminated: false,
+            };
             io.to(roomId).emit('room:choices:update', roomId, room.choices);
         }
 
