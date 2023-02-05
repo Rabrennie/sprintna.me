@@ -67,6 +67,10 @@ io.on('connection', (socket) => {
     socket.on('room:join', (roomId, callback) => {
         const room = rooms[roomId];
 
+        if (!room) {
+            return;
+        }
+
         socket.join(roomId);
 
         if (!room.users.find((u) => u.id === (socket.data.user as User).id)) {
