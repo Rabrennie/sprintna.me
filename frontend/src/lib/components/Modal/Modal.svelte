@@ -1,7 +1,7 @@
 <script lang="ts">
 	export let id: string;
 
-	let open = false;
+	export let open: boolean = false;
 
 	export function toggle() {
 		open = !open;
@@ -15,10 +15,11 @@
 	};
 </script>
 
-<label for={id} class="btn {buttonVariant && buttonVariantMap[buttonVariant]}"
-	><slot name="button" /></label
->
-
+{#if $$slots.button}
+	<label for={id} class="btn {buttonVariant && buttonVariantMap[buttonVariant]}"
+		><slot name="button" /></label
+	>
+{/if}
 <input type="checkbox" {id} class="modal-toggle" bind:checked={open} />
 <label for={id} class="modal cursor-pointer">
 	<label class="modal-box relative" for="">
