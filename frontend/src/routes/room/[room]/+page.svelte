@@ -1,17 +1,26 @@
 <script lang="ts">
 	import { page } from '$app/stores';
+	import Button from '$lib/components/Button/Button.svelte';
 	import SelectedAlbum from '$lib/components/SelectedAlbum/SelectedAlbum.svelte';
-	import Steps from '$lib/components/Steps/Steps.svelte';
-	import { StepState } from '$lib/components/Steps/StepState';
 	import { roomStore, websocketStore } from '$lib/stores/AppStore';
-	import { RoomState } from '../../../../../common/Room';
+	import { RoomState, type Choice } from '../../../../../common/Room';
 	import ContinueModal from './ContinueModal.svelte';
+	import RoomSteps from './RoomSteps.svelte';
 	import SearchModal from './SearchModal.svelte';
+	import SpinnerModal from './SpinnerModal.svelte';
+
+	let eliminating: Choice | undefined = undefined;
 
 	websocketStore.subscribe((store) => {
 		if (store.socket && store.connected && $roomStore?.id !== $page.params.room) {
 			store.socket.emit('room:join', $page.params.room, (room) => {
 				roomStore.set(room);
+			});
+		}
+
+		if (store.socket && store.connected) {
+			store.socket.on('room:album:eliminated', (id, choice) => {
+				eliminating = choice;
 			});
 		}
 	});
@@ -36,6 +45,32 @@
 			});
 		}
 	}
+
+	function onElimate() {
+		if ($websocketStore.connected) {
+			$websocketStore.socket?.emit('room:album:eliminate', $page.params.room, () => {
+				console.log('here');
+			});
+		}
+	}
+
+	function onSpinnerComplete() {
+		roomStore.update((room) => {
+			if (room && eliminating) {
+				const choices = { ...room.choices };
+				choices[eliminating.user].eliminated = true;
+				return { ...room, choices };
+			}
+
+			return room;
+		});
+		setTimeout(() => (eliminating = undefined), 1000);
+	}
+
+	$: winner = Object.values($roomStore?.choices ?? {}).find((c) => !c.eliminated);
+	$: notWinners = Object.values($roomStore?.choices ?? {})
+		.filter((c) => c.eliminated)
+		.map((c) => ($roomStore?.users ?? []).find((u) => u.id === c.user));
 </script>
 
 {#if $roomStore}
@@ -46,50 +81,82 @@
 	</div>
 
 	<div class="mt-14">
-		<Steps
-			steps={[
-				{
-					name: 'Select',
-					state:
-						$roomStore.state === RoomState.SELECTING
-							? StepState.CURRENT
-							: StepState.COMPLETED
-				},
-				{
-					name: 'Eliminate',
-					state:
-						$roomStore.state === RoomState.ELIMINATING
-							? StepState.CURRENT
-							: $roomStore.state === RoomState.SELECTING
-							? StepState.FUTURE
-							: StepState.COMPLETED
-				},
-				{ name: 'Winner', state: StepState.FUTURE }
-			]}
-		/>
+		<RoomSteps />
 
 		<div class="flex gap-x-16 gap-y-8 flex-wrap mt-16 justify-evenly items-stretch">
-			{#each $roomStore.users as user}
-				{#if $roomStore.choices[user.id]}
+			{#if !eliminating}
+				{#if $roomStore.state !== RoomState.FINISHED}
+					{#each $roomStore.users as user}
+						{#if $roomStore.choices[user.id]}
+							<SelectedAlbum
+								name={user.name}
+								albumName={$roomStore.choices[user.id].choice.title}
+								artistName={$roomStore.choices[user.id].choice.artist}
+								albumImageUrl={$roomStore.choices[user.id].choice.imageUrl}
+								albumLink={$roomStore.choices[user.id].choice.url}
+							/>
+						{/if}
+						{#if !$roomStore.choices[user.id]}
+							<SelectedAlbum name={user.name} />
+						{/if}
+					{/each}
+				{/if}
+				{#if $roomStore.state === RoomState.FINISHED && winner}
 					<SelectedAlbum
-						name={user.name}
-						albumName={$roomStore.choices[user.id].choice.title}
-						artistName={$roomStore.choices[user.id].choice.artist}
-						albumImageUrl={$roomStore.choices[user.id].choice.imageUrl}
-						albumLink={$roomStore.choices[user.id].choice.url}
+						name={$roomStore.users.find((u) => u.id == winner?.user)?.name ?? ''}
+						albumName={winner.choice.title}
+						artistName={winner.choice.artist}
+						albumImageUrl={winner.choice.imageUrl}
+						albumLink={winner.choice.url}
+					/>
+					<iframe
+						class="shadow-lg"
+						style="border-radius:12px"
+						src={winner.choice.url.replace('/album/', '/embed/album/')}
+						width="50%"
+						height="380"
+						frameborder="0"
+						allowfullscreen
+						allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+						title={winner.choice.title}
 					/>
 				{/if}
-				{#if !$roomStore.choices[user.id]}
-					<SelectedAlbum name={user.name} />
-				{/if}
-			{/each}
+			{/if}
 		</div>
+
+		{#if $roomStore.state === RoomState.FINISHED && winner && notWinners && !eliminating}
+			<div class="divider mt-16 mb-16">Not Winners</div>
+			<div class="flex gap-x-16 gap-y-8 flex-wrap justify-evenly items-stretch">
+				{#each notWinners as user}
+					{#if user && $roomStore.choices[user.id]}
+						<SelectedAlbum
+							name={user.name}
+							albumName={$roomStore.choices[user.id].choice.title}
+							artistName={$roomStore.choices[user.id].choice.artist}
+							albumImageUrl={$roomStore.choices[user.id].choice.imageUrl}
+							albumLink={$roomStore.choices[user.id].choice.url}
+                            eliminated
+						/>
+					{/if}
+					{#if user && !$roomStore.choices[user.id]}
+						<SelectedAlbum name={user.name} />
+					{/if}
+				{/each}
+			</div>
+		{/if}
 
 		<div class="mt-16 flex gap-x-8 justify-center">
 			{#if $roomStore.state === RoomState.SELECTING}
 				<SearchModal on:select={onAlbumSelected} />
 				<ContinueModal on:continue={onContinue} />
 			{/if}
+			{#if $roomStore.state === RoomState.ELIMINATING}
+				<Button on:click={onElimate} block={false} variant="warning">Eliminate an album</Button>
+			{/if}
 		</div>
 	</div>
+
+	{#if eliminating}
+		<SpinnerModal {eliminating} on:complete={onSpinnerComplete} />
+	{/if}
 {/if}
