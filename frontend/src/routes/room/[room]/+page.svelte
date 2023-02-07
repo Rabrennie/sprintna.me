@@ -55,16 +55,18 @@
 	}
 
 	function onSpinnerComplete() {
-		roomStore.update((room) => {
-			if (room && eliminating) {
-				const choices = { ...room.choices };
-				choices[eliminating.user].eliminated = true;
-				return { ...room, choices };
-			}
+		setTimeout(() => {
+			roomStore.update((room) => {
+				if (room && eliminating) {
+					const choices = { ...room.choices };
+					choices[eliminating.user].eliminated = true;
+					return { ...room, choices };
+				}
 
-			return room;
-		});
-		setTimeout(() => (eliminating = undefined), 1000);
+				return room;
+			});
+			eliminating = undefined;
+		}, 1000);
 	}
 
 	$: winner = Object.values($roomStore?.choices ?? {}).find((c) => !c.eliminated);
@@ -94,6 +96,7 @@
 								artistName={$roomStore.choices[user.id].choice.artist}
 								albumImageUrl={$roomStore.choices[user.id].choice.imageUrl}
 								albumLink={$roomStore.choices[user.id].choice.url}
+								eliminated={$roomStore.choices[user.id].eliminated}
 							/>
 						{/if}
 						{#if !$roomStore.choices[user.id]}
@@ -135,7 +138,7 @@
 							artistName={$roomStore.choices[user.id].choice.artist}
 							albumImageUrl={$roomStore.choices[user.id].choice.imageUrl}
 							albumLink={$roomStore.choices[user.id].choice.url}
-                            eliminated
+							eliminated
 						/>
 					{/if}
 					{#if user && !$roomStore.choices[user.id]}
@@ -151,7 +154,9 @@
 				<ContinueModal on:continue={onContinue} />
 			{/if}
 			{#if $roomStore.state === RoomState.ELIMINATING}
-				<Button on:click={onElimate} block={false} variant="warning">Eliminate an album</Button>
+				<Button on:click={onElimate} block={false} variant="warning"
+					>Eliminate an album</Button
+				>
 			{/if}
 		</div>
 	</div>
