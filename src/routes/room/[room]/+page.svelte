@@ -3,7 +3,7 @@
 	import Button from '$lib/components/Button/Button.svelte';
 	import SelectedAlbum from '$lib/components/SelectedAlbum/SelectedAlbum.svelte';
 	import { roomStore, websocketStore } from '$lib/stores/AppStore';
-	import { RoomState, type Choice } from '../../../../../common/Room';
+	import { RoomState, type Choice } from '../../../types/Room';
 	import ContinueModal from './ContinueModal.svelte';
 	import RoomSteps from './RoomSteps.svelte';
 	import SearchModal from './SearchModal.svelte';

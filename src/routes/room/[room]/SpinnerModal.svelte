@@ -2,7 +2,7 @@
 	import Modal from '$lib/components/Modal/Modal.svelte';
 	import Spinner from '$lib/components/Spinner/Spinner.svelte';
 	import { roomStore } from '$lib/stores/AppStore';
-	import type { Choice } from '../../../../../common/Room';
+	import type { Choice } from '../../../types/Room';
 
 	export let eliminating: Choice;
 

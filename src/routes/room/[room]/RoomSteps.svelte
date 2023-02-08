@@ -3,7 +3,7 @@
 	import { StepState } from '$lib/components/Steps/StepState';
 
 	import { roomStore } from '$lib/stores/AppStore';
-	import { RoomState } from '../../../../../common/Room';
+	import { RoomState } from '../../../types/Room';
 </script>
 
 {#if $roomStore}
