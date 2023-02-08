@@ -1,8 +1,8 @@
 import { writable } from 'svelte/store';
 import { io, Socket } from 'socket.io-client';
-import type ClientToServerEvents from '../../../../common/ClientToServerEvents';
-import type ServerToClientEvents from '../../../../common/ServerToClientEvents';
-import type Room from '../../../../common/Room';
+import type ClientToServerEvents from '../../types/ClientToServerEvents';
+import type ServerToClientEvents from '../../types/ServerToClientEvents';
+import type Room from '../../types/Room';
 import { browser } from '$app/environment';
 
 interface WebsocketStore {

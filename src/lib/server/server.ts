@@ -1,10 +1,10 @@
 import { Server } from 'socket.io';
-import type ClientToServerEvents from '../../../../common/ClientToServerEvents';
-import type ServerToClientEvents from '../../../../common/ServerToClientEvents';
-import type Room from '../../../../common/Room';
-import { RoomState } from '../../../../common/Room';
+import type ClientToServerEvents from '../../types/ClientToServerEvents';
+import type ServerToClientEvents from '../../types/ServerToClientEvents';
+import type Room from '../../types/Room';
+import { RoomState } from '../../types/Room';
 import crypto from 'crypto';
-import type User from '../../../../common/User';
+import type User from '../../types/User';
 import { db } from './database';
 
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
