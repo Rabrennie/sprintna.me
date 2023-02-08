@@ -28,12 +28,15 @@ if (browser) {
 	if (!name) {
 		name = 'Anonymous';
 	}
-	const socket: Socket<ServerToClientEvents, ClientToServerEvents> = io('http://localhost:3000', {
-		auth: {
-			token: token,
-			name: name
+	const socket: Socket<ServerToClientEvents, ClientToServerEvents> = io(
+		`${window.location.protocol}//${window.location.host}/`,
+		{
+			auth: {
+				token: token,
+				name: name
+			}
 		}
-	});
+	);
 	websocketStore.update((value) => ({ ...value, socket }));
 
 	socket.on('connect', () => {
@@ -60,7 +63,7 @@ if (browser) {
 		});
 	});
 
-    socket.on('room:users:update', (id, users) => {
+	socket.on('room:users:update', (id, users) => {
 		roomStore.update((room) => {
 			if (room?.id === id) {
 				return { ...room, users };
