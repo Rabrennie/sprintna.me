@@ -1,8 +1,8 @@
-import { SPOTIFY_CLIENT_ID, SPOTIFY_CLIENT_SECRET } from '$env/static/private';
+import { env } from '$env/dynamic/private';
 import type { RequestHandler } from './$types';
 
 const getToken = async () => {
-	const token = Buffer.from(`${SPOTIFY_CLIENT_ID}:${SPOTIFY_CLIENT_SECRET}`).toString('base64');
+	const token = Buffer.from(`${env.SPOTIFY_CLIENT_ID}:${env.SPOTIFY_CLIENT_SECRET}`).toString('base64');
 
 	const params = new URLSearchParams({ grant_type: 'client_credentials' });
 	const res = await fetch(`https://accounts.spotify.com/api/token`, {
