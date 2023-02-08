@@ -7,4 +7,5 @@ export default interface ClientToServerEvents {
     'room:proceed': (roomId: string, callback: () => void) => void;
     'room:album:select': (roomId: string, album: Album, callback: () => void) => void;
     'room:album:eliminate': (roomId: string, callback: () => void) => void;
+    'client:set:name': (name: string, callback: () => void) => void;
 }

@@ -27,7 +27,6 @@ if (browser) {
 	let name = localStorage.getItem('name');
 	if (!name) {
 		name = 'Anonymous';
-		localStorage.setItem('name', name);
 	}
 	const socket: Socket<ServerToClientEvents, ClientToServerEvents> = io('http://localhost:3000', {
 		auth: {
@@ -55,6 +54,16 @@ if (browser) {
 		roomStore.update((room) => {
 			if (room?.id === id) {
 				return { ...room, state };
+			}
+
+			return room;
+		});
+	});
+
+    socket.on('room:users:update', (id, users) => {
+		roomStore.update((room) => {
+			if (room?.id === id) {
+				return { ...room, users };
 			}
 
 			return room;

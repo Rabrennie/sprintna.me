@@ -11,6 +11,7 @@
 	import type { PageData } from './$types';
 	import { goto } from '$app/navigation';
 	import { browser } from '$app/environment';
+	import NameModal from './NameModal.svelte';
 
 	export let data: PageData;
 
@@ -82,16 +83,25 @@
 	$: notWinners = Object.values($roomStore?.choices ?? {})
 		.filter((c) => c.eliminated)
 		.map((c) => ($roomStore?.users ?? []).find((u) => u.id === c.user));
+
+    let nameModalOpen = (browser && !localStorage.getItem('name'));
 </script>
+
+<svelte:head>
+    <title>sprintna.me</title>
+</svelte:head>
 
 {#if $roomStore}
 	<div class="flex">
 		<a href="https://sprintna.me" class="flex-1 text-lg">sprintna.me</a>
 		<h1 class="flex flex-1 justify-center text-3xl text-primary-content">{$roomStore.name}</h1>
-		<div class="flex flex-1 justify-end text-lg" />
+		<div class="flex flex-1 justify-end text-lg">
+            <Button on:click={() => nameModalOpen = true} block={false}>Change Name</Button>
+        </div>
 	</div>
 
 	<div class="mt-14">
+        <NameModal bind:open={nameModalOpen} />
 		<RoomSteps />
 
 		<div class="flex gap-x-16 gap-y-8 flex-wrap mt-16 justify-evenly items-stretch">

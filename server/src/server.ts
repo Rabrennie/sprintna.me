@@ -52,13 +52,34 @@ io.on('connection', (socket) => {
         socket.disconnect();
     }
 
+    socket.on('client:set:name', (name, callback) => {
+        if (!socket.data.user) {
+            return;
+        }
+
+        sessions[socket.handshake.auth.token].name = name;
+        socket.data.user.name = name;
+        socket.rooms.forEach(r => {
+            if (rooms[r]) {
+                const userIndex = rooms[r].users.findIndex(u => u.id === (socket.data.user as User).id);
+                if (userIndex >= 0) {
+                    rooms[r].users[userIndex].name = name;
+                    io.to(r).emit('room:users:update', r, rooms[r].users)
+                }
+            }
+        })
+
+        socket.emit('session', socket.data.user);
+        callback();
+    });
+
     socket.on('room:create', async (name, callback) => {
         const id = crypto.randomBytes(16).toString('base64url');
         rooms[id] = {
             name,
             state: RoomState.SELECTING,
             id,
-            users: [socket.data.user as User, { id: 'aaaa', name: 'aaaa' }, { id: 'bbbb', name: 'bbbb' }],
+            users: [socket.data.user as User],
             choices: {},
         };
         await db.rooms.create({
