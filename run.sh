@@ -1,2 +1,2 @@
 #!/bin/sh
-cd /app/frontend && npm run preview
+cd /app && npm run preview
