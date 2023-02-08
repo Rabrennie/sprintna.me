@@ -29,7 +29,9 @@
 	$: myEl && spin();
 </script>
 
-<div
+<div class="relative">
+    <div class="absolute right-0 top-1/2 w-4 h-1 border-solid border-r-red-400 border-r-8 border-y-transparent border-y-8 border-l-0 -translate-y-1/2"></div>
+    <div
 	class="relative border-slate-100 border rounded-full p-16"
 	style="min-width: 500px; min-height: 500px; max-height: 500px; max-width: 500px;"
 	bind:this={myEl}
@@ -59,4 +61,5 @@
         transform: rotate({(i / items.length) * 360 + ((1 / items.length) * 360) / 2}deg);"
 		/>
 	{/each}
+</div>
 </div>
