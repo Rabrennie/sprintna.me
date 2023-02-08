@@ -8,6 +8,15 @@
 	import RoomSteps from './RoomSteps.svelte';
 	import SearchModal from './SearchModal.svelte';
 	import SpinnerModal from './SpinnerModal.svelte';
+	import type { PageData } from './$types';
+	import { goto } from '$app/navigation';
+	import { browser } from '$app/environment';
+
+	export let data: PageData;
+
+	if (browser && !data.room) {
+		goto('/');
+	}
 
 	let eliminating: Choice | undefined = undefined;
 
