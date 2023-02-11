@@ -11,9 +11,8 @@
     "test:unit": "vitest",
     "lint": "prettier --plugin-search-dir . --check . && eslint .",
     "format": "prettier --plugin-search-dir . --write .",
-    "storybook": "storybook dev -p 6006",
-    "build-storybook": "storybook build",
-    "plswork": "ts-node ./src/server.ts"
+    "storybook": "STORYBOOK=true storybook dev -p 6006",
+    "build-storybook": "STORYBOOK=true storybook build"
   },
   "devDependencies": {
     "@storybook/addon-essentials": "^7.0.0-beta.43",

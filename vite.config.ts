@@ -3,13 +3,19 @@ import { Server } from 'socket.io';
 import type { UserConfig, ViteDevServer } from 'vite';
 import { io } from "./src/lib/server/server";
 
+console.log(process.env.STORYBOOK)
+
 const webSocketServer = {
   name: "webSocketServer",
   configureServer(server: ViteDevServer) {
-    io.attach(server.httpServer)
+    if (!process.env.STORYBOOK) {
+        io.attach(server.httpServer)
+    }
   },
   configurePreviewServer(server: ViteDevServer) {
-    io.attach(server.httpServer)
+    if (!process.env.STORYBOOK) {
+        io.attach(server.httpServer)
+    }
   }
 };
 
