@@ -42,7 +42,10 @@
     });
 </script>
 
-<div class="relative">
+<div
+    class="relative overflow-hidden"
+    style="min-width: 500px; min-height: 500px; max-height: 500px; max-width: 500px;"
+>
     <div
         class="relative p-16"
         style="min-width: 500px; min-height: 500px; max-height: 500px; max-width: 500px;"
