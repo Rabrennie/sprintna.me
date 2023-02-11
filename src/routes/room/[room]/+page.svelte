@@ -130,6 +130,7 @@
 						artistName={winner.choice.artist}
 						albumImageUrl={winner.choice.imageUrl}
 						albumLink={winner.choice.url}
+                        confetti
 					/>
 					<iframe
 						class="shadow-lg"
