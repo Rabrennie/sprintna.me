@@ -7,7 +7,6 @@
         const anime = await import('animejs/lib/anime.js');
         spin = () => {
             if (browser && myEl && items.length) {
-                console.log(anime);
                 anime.default({
                     targets: myEl,
                     rotate:
@@ -35,6 +34,12 @@
     $: browser && myEl && spin();
     const tau = Math.PI / 180;
     $: a1 = (360 / items.length) * tau;
+    $: positions = items.map((_, i) => {
+        return [
+            { x: 250 * Math.sin(0) + 250, y: 250 * Math.cos(0) + 250 },
+            { x: 250 * Math.sin(a1) + 250, y: 250 * Math.cos(a1) + 250 }
+        ];
+    });
 </script>
 
 <div class="relative">
@@ -52,27 +57,37 @@
                 viewBox="0 0 500 500"
                 xmlns="http://www.w3.org/2000/svg"
             >
-                <path
-                    fill="url(#img{i})"
-                    d="
-                M {250 * Math.sin(0) + 250} {250 * Math.cos(0) + 250},
-                L 250, 250
-                L {250 * Math.sin(a1) + 250} {250 * Math.cos(a1) + 250}
-                A 250 250 0 0 1 {250 * Math.sin(0) + 250} {250 * Math.cos(0) + 250}
-                "
+                <image
+                    href={item}
+                    height={500}
+                    width={500}
+                    x={0}
+                    y={0}
+                    transform=""
+                    clip-path="url(#clip{i})"
+                    style="
+                filter: blur(20px);"
+                />
+                <image
+                    href={item}
+                    height={250}
+                    width={250}
+                    x={250}
+                    y={Math.min(250, (positions[i][0].y + positions[i][1].y) / 2 - 125)}
+                    transform=""
+                    clip-path="url(#clip{i})"
                 />
                 <defs>
-                    <pattern
-                        id="img{i}"
-                        patternUnits="userSpaceOnUse"
-                        viewBox="0 0 500 500"
-                        width={500}
-                        height={500}
-                        patternTransform="rotate({a1 / tau}) translate({200 * items.length} {100 *
-                            items.length})"
-                    >
-                        <image href={item} x="0" y="0" width={500} height={500} />
-                    </pattern>
+                    <clipPath id="clip{i}">
+                        <path
+                            d="
+                    M {positions[i][0].x} {positions[i][0].y},
+                    L 250, 250
+                    L {positions[i][1].x} {positions[i][1].y}
+                    A 250 250 0 0 1 {positions[i][0].x} {positions[i][0].y}
+                    "
+                        />
+                    </clipPath>
                 </defs>
             </svg>
         {/each}
