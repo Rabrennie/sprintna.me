@@ -13,8 +13,6 @@
     const emojis = ['❌', '👎', '🙅‍♀️', '⛔️', '🙅', '🙅‍♂️', '😭', '🚫', '💀'];
     const eliminatedEmoji = emojis[Math.floor(Math.random() * emojis.length)];
 
-    let copyEl: HTMLTextAreaElement;
-
     function stringToHslColor(str: string, s: number, l: number) {
         var hash = 0;
         for (var i = 0; i < str.length; i++) {
@@ -26,10 +24,6 @@
     }
 
     async function copy() {
-        if (!copyEl) {
-            return;
-        }
-
         await navigator.clipboard.writeText(albumName);
     }
 </script>
@@ -78,6 +72,5 @@
             </button>
         </div>
         <div class="text-base-content text-sm">{artistName}</div>
-        <textarea class="w-0 h-0 opacity-0" bind:value={albumName} bind:this={copyEl} />
     </div>
 </div>
