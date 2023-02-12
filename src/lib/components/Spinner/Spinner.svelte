@@ -95,7 +95,50 @@
             </svg>
         {/each}
     </div>
-    <div
-        class="absolute right-0 top-1/2 w-4 h-1 border-solid border-r-red-400 border-r-8 border-y-transparent border-y-8 border-l-0 -translate-y-1/2"
-    />
+    <svg
+        width="23"
+        height="26"
+        viewBox="0 0 23 26"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+        class="absolute -right-1 top-1/2 -translate-y-1/2"
+    >
+        <g filter="url(#filter0_d_101_11)">
+            <path d="M4 11L20.5 1.47372L20.5 20.5263L4 11Z" fill="rgb(251, 189, 35)" />
+        </g>
+        <defs>
+            <filter
+                id="filter0_d_101_11"
+                x="0"
+                y="0.47372"
+                width="22.5"
+                height="25.0526"
+                filterUnits="userSpaceOnUse"
+                color-interpolation-filters="sRGB"
+            >
+                <feFlood flood-opacity="0" result="BackgroundImageFix" />
+                <feColorMatrix
+                    in="SourceAlpha"
+                    type="matrix"
+                    values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0"
+                    result="hardAlpha"
+                />
+                <feOffset dx="-1" dy="2" />
+                <feGaussianBlur stdDeviation="1.5" />
+                <feComposite in2="hardAlpha" operator="out" />
+                <feColorMatrix type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.27 0" />
+                <feBlend
+                    mode="normal"
+                    in2="BackgroundImageFix"
+                    result="effect1_dropShadow_101_11"
+                />
+                <feBlend
+                    mode="normal"
+                    in="SourceGraphic"
+                    in2="effect1_dropShadow_101_11"
+                    result="shape"
+                />
+            </filter>
+        </defs>
+    </svg>
 </div>
