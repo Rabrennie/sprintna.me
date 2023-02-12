@@ -14,3 +14,4 @@
 </Template>
 
 <Story name="Main" args={{ id: 'my-modal' }} />
+<Story name="Not closable" args={{ id: 'my-modal', canClose: false}} />

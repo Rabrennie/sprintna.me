@@ -2,6 +2,7 @@
 	export let id: string;
 
 	export let open: boolean = false;
+	export let canClose: boolean = true;
 
 	export function toggle() {
 		open = !open;
@@ -21,7 +22,7 @@
 	>
 {/if}
 <input type="checkbox" {id} class="modal-toggle" bind:checked={open} />
-<label for={id} class="modal cursor-pointer">
+<label for={canClose ? id: null} class="modal { canClose && 'cursor-pointer'}">
 	<label class="modal-box relative" for="">
 		<slot name="modal" />
 	</label>
