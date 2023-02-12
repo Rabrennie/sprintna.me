@@ -6,7 +6,7 @@
     export let albumLink: string = 'https://open.spotify.com/album/5Z9iiGl2FcIfa3BMiv6OIw';
     export let albumName: string = 'Not Selected';
     export let artistName: string = 'Not Selected';
-    export let albumImageUrl: string = 'https://sprintna.me//storage/no-album.png';
+    export let albumImageUrl: string | null = null;
     export let eliminated: boolean = false;
     export let confetti: boolean = false;
 
@@ -46,8 +46,8 @@
         <a href={albumLink}>
             <Confetti fireOnLoad={confetti}>
                 <div
-                    class="bg-white bg-cover w-52 h-52 shadow-lg shadow-slate-900 mb-4 group-hover:scale-105 transition-transform album-image"
-                    style="background-image: url({albumImageUrl})"
+                    class="bg-slate-300 bg-cover w-52 h-52 shadow-lg shadow-slate-900 mb-4 group-hover:scale-105 transition-transform album-image"
+                    style={albumImageUrl && `background-image: url(${albumImageUrl})`}
                 />
             </Confetti>
         </a>
