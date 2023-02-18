@@ -92,6 +92,7 @@
     <meta property="og:title" content={data.room?.name} />
     <meta property="og:type" content="website" />
     <meta property="og:url" content="https://sprintna.me/room/{data.room?.link_id}" />
+    <meta property="og:site_name" content="sprintna.me" />
 </svelte:head>
 
 {#if $roomStore}
