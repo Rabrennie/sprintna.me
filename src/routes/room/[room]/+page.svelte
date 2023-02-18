@@ -89,7 +89,8 @@
 
 <svelte:head>
     <title>sprintna.me - {$page.data.room?.name}</title>
-    <meta property="og:title" content={$page.data.room?.name} />
+    <meta property="og:title" content="{$page.data.room?.name}" />
+    <meta property="og:description" content="Say goodbye to uninspired sprint names" />
     <meta property="og:type" content="website" />
     <meta property="og:url" content="https://sprintna.me/room/{$page.data.room?.link_id}" />
     <meta property="og:site_name" content="sprintna.me" />
