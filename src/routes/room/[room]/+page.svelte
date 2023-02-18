@@ -88,7 +88,10 @@
 </script>
 
 <svelte:head>
-    <title>sprintna.me</title>
+    <title>sprintna.me - {data.room?.name}</title>
+    <meta property="og:title" content={data.room?.name} />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://sprintna.me/room/{data.room?.link_id}" />
 </svelte:head>
 
 {#if $roomStore}
