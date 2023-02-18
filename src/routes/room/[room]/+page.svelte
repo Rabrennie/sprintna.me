@@ -88,10 +88,10 @@
 </script>
 
 <svelte:head>
-    <title>sprintna.me - {data.room?.name}</title>
-    <meta property="og:title" content={data.room?.name} />
+    <title>sprintna.me - {$page.data.room?.name}</title>
+    <meta property="og:title" content={$page.data.room?.name} />
     <meta property="og:type" content="website" />
-    <meta property="og:url" content="https://sprintna.me/room/{data.room?.link_id}" />
+    <meta property="og:url" content="https://sprintna.me/room/{$page.data.room?.link_id}" />
     <meta property="og:site_name" content="sprintna.me" />
 </svelte:head>
 
