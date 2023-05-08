@@ -16,7 +16,7 @@
     }
 </script>
 
-<Modal id="name-modal" bind:open={open}>
+<Modal id="name-modal" bind:isOpen={open}>
     <div slot="modal" class="flex flex-col gap-y-3">
         <TextInput bind:value={name} placeholder="Your name"/>
         <Button on:click={updateName}>Update</Button>

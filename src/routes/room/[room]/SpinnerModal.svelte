@@ -9,7 +9,7 @@
     $: choices = Object.values($roomStore?.choices ?? {}).filter((c) => !c.eliminated);
 </script>
 
-<Modal id="spinner-modal" open={true} canClose={false}>
+<Modal id="spinner-modal" isOpen={true} canClose={false}>
     <div slot="modal" class="flex items-center justify-center">
         <Spinner
             items={choices.map((c) => c.choice.imageUrl)}
