@@ -1,83 +1,61 @@
 generator client {
-  provider = "prisma-client-js"
+    provider = "prisma-client-js"
 }
 
 datasource db {
-  provider = "sqlite"
-  url      = env("DATABASE_URL")
+    provider = "sqlite"
+    url      = env("DATABASE_URL")
 }
 
-model choices {
-  id           Int                       @id @default(autoincrement())
-  room_id      Int
-  user_name    String
-  album_id     String
-  album_image  String
-  album_artist String
-  album_name   String
-  eliminated   Boolean
-  created_at   DateTime?
-  updated_at   DateTime?
-  rooms        rooms                     @relation(fields: [room_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+model User {
+    id         Int     @id @default(autoincrement())
+    email      String
+    name       String
+    image      String?
+    provider   String
+    providerId String
+    createdAt  Int     @default(dbgenerated("(strftime('%s', 'now'))"))
+
+    choices Choice[]
+    teams   Team[]
+
+    @@unique([provider, providerId])
 }
 
-model failed_jobs {
-  id         Int      @id @default(autoincrement())
-  uuid       String   @unique(map: "failed_jobs_uuid_unique")
-  connection String
-  queue      String
-  payload    String
-  exception  String
-  failed_at  DateTime @default(now())
+model Team {
+    id        Int    @id @default(autoincrement())
+    name      String
+    createdAt Int    @default(dbgenerated("(strftime('%s', 'now'))"))
+
+    rooms  Room[]
+    users User[]
 }
 
-model migrations {
-  id        Int    @id @default(autoincrement())
-  migration String
-  batch     Int
+model Choice {
+    id          Int     @id @default(autoincrement())
+    albumId     String
+    albumImage  String
+    albumArtist String
+    albumName   String
+    eliminated  Boolean
+    createdAt   Int     @default(dbgenerated("(strftime('%s', 'now'))"))
+
+    room  Room @relation(fields: [roomId], references: [id])
+    roomId Int
+
+    user   User @relation(fields: [userId], references: [id])
+    userId Int
 }
 
-/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by the Prisma Client.
-model password_resets {
-  email      String
-  token      String
-  created_at DateTime?
+model Room {
+    id        Int    @id @default(autoincrement())
+    linkId    String @unique()
+    name      String
+    step      Int    @default(0)
+    createdAt Int    @default(dbgenerated("(strftime('%s', 'now'))"))
 
-  @@index([email], map: "password_resets_email_index")
-  @@ignore
-}
+    choices Choice[]
 
-model personal_access_tokens {
-  id             Int       @id @default(autoincrement())
-  tokenable_type String
-  tokenable_id   Int
-  name           String
-  token          String    @unique(map: "personal_access_tokens_token_unique")
-  abilities      String?
-  last_used_at   DateTime?
-  created_at     DateTime?
-  updated_at     DateTime?
-
-  @@index([tokenable_type, tokenable_id], map: "personal_access_tokens_tokenable_type_tokenable_id_index")
-}
-
-model rooms {
-  id         Int       @id @default(autoincrement())
-  link_id    String    @unique(map: "rooms_link_id_unique")
-  name       String
-  created_at DateTime?
-  updated_at DateTime?
-  step       Int       @default(0)
-  choices    choices[]
-}
-
-model users {
-  id                Int       @id @default(autoincrement())
-  name              String
-  email             String    @unique(map: "users_email_unique")
-  email_verified_at DateTime?
-  password          String
-  remember_token    String?
-  created_at        DateTime?
-  updated_at        DateTime?
+    team   Team @relation(fields: [teamId], references: [id])
+    teamId Int
 }
