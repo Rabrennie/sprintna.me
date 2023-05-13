@@ -1,17 +1,17 @@
 import { sveltekit } from '@sveltejs/kit/vite';
 import type { UserConfig, ViteDevServer } from 'vite';
-import { io } from './src/lib/server/server';
+import { createServer } from './src/lib/server/ws.server';
 
 const webSocketServer = {
     name: 'webSocketServer',
     configureServer(server: ViteDevServer) {
         if (!process.env.STORYBOOK) {
-            io.attach(server.httpServer);
+            createServer(process.env.AUTH_SECRET).attach(server.httpServer);
         }
     },
     configurePreviewServer(server: ViteDevServer) {
         if (!process.env.STORYBOOK) {
-            io.attach(server.httpServer);
+            createServer(process.env.AUTH_SECRET).attach(server.httpServer);
         }
     }
 };

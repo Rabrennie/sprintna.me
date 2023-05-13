@@ -6,74 +6,58 @@ import type Room from '../../types/Room';
 import { browser } from '$app/environment';
 
 interface WebsocketStore {
-	connected: boolean;
-	socket?: Socket<ServerToClientEvents, ClientToServerEvents>;
+    connected: boolean;
+    socket?: Socket<ServerToClientEvents, ClientToServerEvents>;
 }
 
 export const websocketStore = writable<WebsocketStore>({
-	connected: false,
-	socket: undefined
+    connected: false,
+    socket: undefined
 });
 
 export const roomStore = writable<Room | undefined>();
 
 if (browser) {
-	let token = localStorage.getItem('token');
-	if (!token) {
-		token = crypto.randomUUID();
-		localStorage.setItem('token', token);
-	}
+    const socket: Socket<ServerToClientEvents, ClientToServerEvents> = io(
+        `${window.location.protocol}//${window.location.host}/`
+    );
+    websocketStore.update((value) => ({ ...value, socket }));
 
-	let name = localStorage.getItem('name');
-	if (!name) {
-		name = 'Anonymous';
-	}
-	const socket: Socket<ServerToClientEvents, ClientToServerEvents> = io(
-		`${window.location.protocol}//${window.location.host}/`,
-		{
-			auth: {
-				token: token,
-				name: name
-			}
-		}
-	);
-	websocketStore.update((value) => ({ ...value, socket }));
+    socket.on('connect', () => {
+        websocketStore.update((value) => ({ ...value, connected: true }));
+    });
 
-	socket.on('connect', () => {
-		websocketStore.update((value) => ({ ...value, connected: true }));
-	});
+    socket.on('room:choices:update', (id, choices) => {
+        roomStore.update((room) => {
+            if (room?.id === id) {
+                return { ...room, choices };
+            }
 
-	socket.on('room:choices:update', (id, choices) => {
-		roomStore.update((room) => {
-			if (room?.id === id) {
-				return { ...room, choices };
-			}
+            return room;
+        });
+    });
 
-			return room;
-		});
-	});
+    socket.on('room:state:update', (id, state) => {
+        roomStore.update((room) => {
+            if (room?.id === id) {
+                return { ...room, state };
+            }
 
-	socket.on('room:state:update', (id, state) => {
-		roomStore.update((room) => {
-			if (room?.id === id) {
-				return { ...room, state };
-			}
+            return room;
+        });
+    });
 
-			return room;
-		});
-	});
+    socket.on('room:users:update', (id, users) => {
+        roomStore.update((room) => {
+            if (room?.id === id) {
+                return { ...room, users };
+            }
 
-	socket.on('room:users:update', (id, users) => {
-		roomStore.update((room) => {
-			if (room?.id === id) {
-				return { ...room, users };
-			}
+            return room;
+        });
+    });
 
-			return room;
-		});
-	});
-
-	socket.onAny((...args) => {
-		console.log(args);
-	});
+    socket.onAny((...args) => {
+        console.log(args);
+    });
 }

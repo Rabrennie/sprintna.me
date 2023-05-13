@@ -1,4 +1,4 @@
-import { AuthHandler, type Profile } from '@rabrennie/sveltekit-auth';
+import { AuthHandler, type AuthHandlerConfig, type Profile } from '@rabrennie/sveltekit-auth';
 import { GoogleProvider } from '@rabrennie/sveltekit-auth/providers';
 import { JwtStrategy } from '@rabrennie/sveltekit-auth/session';
 import { env } from '$env/dynamic/private';
@@ -33,7 +33,7 @@ const saveUser = async (event: RequestEvent, profile: Profile) => {
     });
 };
 
-const authHandler = AuthHandler({
+export const authHandlerConfig: AuthHandlerConfig = {
     providers: [
         new GoogleProvider({
             clientId: GOOGLE_ID,
@@ -43,7 +43,9 @@ const authHandler = AuthHandler({
     sessionStrategy: new JwtStrategy({ authKey: AUTH_SECRET, issuer: 'https://sprintna.me' }),
     hooks: { onLogin: saveUser },
     loginRedirectRoute: '/dashboard'
-}) satisfies Handle;
+};
+
+const authHandler = AuthHandler(authHandlerConfig) satisfies Handle;
 
 const setUser = (async ({ event, resolve }) => {
     const session = await event.locals.auth.getSession();

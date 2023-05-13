@@ -14,7 +14,7 @@ export interface Album {
 }
 
 export interface Choice {
-    user: string;
+    user: number;
     choice: Album;
     eliminated: boolean;
 }

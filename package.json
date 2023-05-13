@@ -59,7 +59,7 @@
     "@types/express": "^4.17.17",
     "animejs": "^3.2.1",
     "canvas-confetti": "^1.6.0",
-    "redis": "^4.6.6",
+    "jose": "^4.14.4",
     "socket.io": "^4.6.0",
     "zod": "^3.21.4",
     "zodkit": "^0.2.0"

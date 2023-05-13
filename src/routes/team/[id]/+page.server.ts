@@ -8,9 +8,6 @@ import type { Actions } from './$types';
 import crypto from 'crypto';
 
 const getTeamOrError = async (event: RequestEvent) => {
-    console.log(globalThis);
-
-
     const result = zk.parseRouteParamsSafe(event, {
         id: z.number({ coerce: true }).positive().min(1)
     });
