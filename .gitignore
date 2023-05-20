@@ -116,3 +116,4 @@ dist
 build
 database.sqlite
 dev.sqlite
+dev.sqlite-journal
