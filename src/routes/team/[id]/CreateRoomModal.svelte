@@ -7,7 +7,11 @@
 
     const form = createForm();
 
-    $: console.log($form);
+    let modal: Modal;
+
+    export function toggle() {
+        modal.toggle();
+    }
 </script>
 
 <Modal
@@ -15,10 +19,8 @@
     buttonVariant="success"
     canClose={!$form.loading}
     on:open={form.reset}
+    bind:this={modal}
 >
-    <svelte:fragment slot="customButton" let:toggle>
-        <Button on:click={toggle}>Create Room</Button>
-    </svelte:fragment>
     <svelte:fragment slot="modal" let:toggle>
         <h3 class="text-lg font-bold">Create a new room!</h3>
         <form

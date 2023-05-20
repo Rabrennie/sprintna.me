@@ -17,7 +17,11 @@ const getTeamOrError = async (event: RequestEvent) => {
     }
 
     const team = await db.team.findFirst({
-        where: { id: result.data.id, users: { some: { id: event.locals.user.id } } }
+        where: { id: result.data.id, users: { some: { id: event.locals.user.id } } },
+        include: {
+            users: { select: { name: true, image: true, id: true } },
+            rooms: { include: { choices: true }, orderBy: { createdAt: 'desc' } }
+        }
     });
 
     if (!team) {
@@ -28,7 +32,7 @@ const getTeamOrError = async (event: RequestEvent) => {
 };
 
 const loadFunction: Authenticated<PageServerLoad> = async (event) => {
-    const team = getTeamOrError(event);
+    const team = await getTeamOrError(event);
 
     return {
         team
