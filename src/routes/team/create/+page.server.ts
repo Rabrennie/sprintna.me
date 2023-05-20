@@ -17,7 +17,7 @@ export const load = RequireAuth(loadFunction);
 export const actions = {
     default: RequireAuth(async (event) => {
         if (!event.locals.user) {
-            throw redirect(300, '/');
+            throw redirect(303, '/');
         }
 
         const result = await zk.parseFormDataSafe(event, {
@@ -36,6 +36,6 @@ export const actions = {
             }
         });
 
-        throw redirect(302, `/team/${team.id}`);
+        throw redirect(303, `/team/${team.id}`);
     })
 } satisfies Actions;
