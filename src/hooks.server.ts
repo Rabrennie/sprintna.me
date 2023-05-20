@@ -42,7 +42,7 @@ export const authHandlerConfig: AuthHandlerConfig = {
     ],
     sessionStrategy: new JwtStrategy({ authKey: AUTH_SECRET, issuer: 'https://sprintna.me' }),
     hooks: { onLogin: saveUser },
-    loginRedirectRoute: '/dashboard'
+    loginRedirectRoute: '/team'
 };
 
 const authHandler = AuthHandler(authHandlerConfig) satisfies Handle;
