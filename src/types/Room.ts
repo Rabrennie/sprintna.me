@@ -3,7 +3,7 @@ import type User from './User';
 export enum RoomState {
     SELECTING = 'selecting',
     ELIMINATING = 'eliminating',
-    FINISHED = 'finished',
+    FINISHED = 'finished'
 }
 
 export interface Album {
@@ -14,7 +14,7 @@ export interface Album {
 }
 
 export interface Choice {
-    user: number;
+    userId: number;
     choice: Album;
     eliminated: boolean;
 }
@@ -22,7 +22,7 @@ export interface Choice {
 export default interface Room {
     name: string;
     state: RoomState;
-    id: string;
+    id: number;
     users: User[];
     choices: { [key: string]: Choice };
 }

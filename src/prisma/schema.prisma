@@ -27,7 +27,7 @@ model Team {
     name      String
     createdAt Int    @default(dbgenerated("(strftime('%s', 'now'))"))
 
-    rooms  Room[]
+    rooms Room[]
     users User[]
 }
 
@@ -40,18 +40,20 @@ model Choice {
     eliminated  Boolean
     createdAt   Int     @default(dbgenerated("(strftime('%s', 'now'))"))
 
-    room  Room @relation(fields: [roomId], references: [id])
+    room   Room @relation(fields: [roomId], references: [id])
     roomId Int
 
     user   User @relation(fields: [userId], references: [id])
     userId Int
+
+    @@unique([roomId, userId])
 }
 
 model Room {
     id        Int    @id @default(autoincrement())
     linkId    String @unique()
     name      String
-    step      Int    @default(0)
+    step      String @default("selecting")
     createdAt Int    @default(dbgenerated("(strftime('%s', 'now'))"))
 
     choices Choice[]

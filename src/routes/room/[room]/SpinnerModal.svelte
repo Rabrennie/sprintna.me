@@ -1,7 +1,7 @@
 <script lang="ts">
     import Modal from '$lib/components/Modal/Modal.svelte';
     import Spinner from '$lib/components/Spinner/Spinner.svelte';
-    import { roomStore } from '$lib/stores/AppStore';
+    import { roomStore } from '$lib/stores/RoomStore';
     import type { Choice } from '../../../types/Room';
 
     export let eliminating: Choice;
@@ -13,7 +13,7 @@
     <div slot="modal" class="flex items-center justify-center">
         <Spinner
             items={choices.map((c) => c.choice.imageUrl)}
-            target={choices.findIndex((c) => c.user === eliminating.user)}
+            target={choices.findIndex((c) => c.userId === eliminating.userId)}
             on:complete
         />
     </div>
