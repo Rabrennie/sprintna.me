@@ -5,8 +5,10 @@
     import { RoomState } from '../../../types/Room';
     import type { PageData } from './$types';
     import CreateRoomModal from './CreateRoomModal.svelte';
+    import InviteModal from './InviteModal.svelte';
 
     let createRoomModal: CreateRoomModal;
+    let inviteModal: InviteModal;
 
     export let data: PageData;
 </script>
@@ -15,7 +17,9 @@
     <div class="flex justify-between items-center">
         <div class="flex gap-4 items-center">
             <h1 class="text-4xl text-yellow-300">{$page.data.team.name}</h1>
-            <Button block={false} variant="ghost">Invite</Button>
+            <Button block={false} variant="ghost" on:click={() => inviteModal.toggle()}
+                >Invite</Button
+            >
         </div>
         <div>
             <div class="avatar-group -space-x-6 overflow-visible">
@@ -78,4 +82,8 @@
     {/each}
 
     <CreateRoomModal bind:this={createRoomModal} />
+    <InviteModal
+        bind:this={inviteModal}
+        link={new URL(`/invite/${data.team.invite}`, $page.url.origin).toString()}
+    />
 </div>

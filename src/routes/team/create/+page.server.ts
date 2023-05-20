@@ -4,6 +4,7 @@ import { type Authenticated, RequireAuth } from '@rabrennie/sveltekit-auth/helpe
 import type { Actions, PageServerLoad } from './$types';
 import { redirect } from '@sveltejs/kit';
 import { db } from '$lib/server/database';
+import crypto from 'crypto';
 
 const loadFunction: Authenticated<PageServerLoad> = async ({ locals }) => {
     if (!locals.user) {
@@ -30,6 +31,7 @@ export const actions = {
         const team = await db.team.create({
             data: {
                 name: result.data.name,
+                invite: crypto.randomBytes(16).toString('base64url') ,
                 users: { connect: [{ id: event.locals.user.id }] }
             }
         });

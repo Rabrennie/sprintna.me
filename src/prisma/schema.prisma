@@ -26,6 +26,7 @@ model Team {
     id        Int    @id @default(autoincrement())
     name      String
     createdAt Int    @default(dbgenerated("(strftime('%s', 'now'))"))
+    invite    String
 
     rooms Room[]
     users User[]
