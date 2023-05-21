@@ -1,6 +1,8 @@
 # Use the latest LTS version of Node.js on Alpine Linux
 FROM node:lts-alpine as build
 
+ARG DATABASE_URL
+
 # Set the working directory to /app
 WORKDIR /app
 
