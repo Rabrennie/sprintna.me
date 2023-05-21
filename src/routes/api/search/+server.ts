@@ -21,7 +21,7 @@ const getToken = async () => {
     return data.access_token;
 };
 
-const search = async (query: string, token: string) => {
+const search = async (query: string, token: string) : Promise<SpotifyApi.AlbumSearchResponse> => {
     const params = new URLSearchParams({ q: query, type: 'album', market: 'GB' });
     const res = await fetch(`https://api.spotify.com/v1/search?${params}`, {
         headers: new Headers({

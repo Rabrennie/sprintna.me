@@ -5,7 +5,7 @@
 
     let modal: Modal;
     let query: string = '';
-    let albums: any[] | null = null;
+    let albums: SpotifyApi.AlbumSearchResponse['albums']['items'] | null = null;
     let searching = false;
 
     async function search() {
