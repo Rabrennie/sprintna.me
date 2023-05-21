@@ -1,15 +1,26 @@
-FROM node:lts-alpine
+# Use the latest LTS version of Node.js on Alpine Linux
+FROM node:lts-alpine as build
 
+# Set the working directory to /app
 WORKDIR /app
+
+# Copy all files to container
 COPY . .
 
-ENV DATABASE_URL=file:/data/database.sqlite
-
+# Install dependencies
 RUN npm install
-RUN npx prisma generate --schema=./src/prisma/schema.prisma
-RUN npm run build
-RUN chmod +x run.sh
 
-EXPOSE 8080
+# Build the application
+RUN npm run build
+
+# Create a new image with only the build folder and the latest LTS version of Node.js on Alpine Linux
+FROM node:lts-alpine
+
+# Set the working directory to /app
+WORKDIR /app
+
+# Copy the build folder from the previous image to the container
+COPY --from=build /app/build .
+COPY --from=build /app/run.sh .
 
 ENTRYPOINT [ "/app/run.sh" ]

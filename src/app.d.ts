@@ -1,12 +1,20 @@
-// See https://kit.svelte.dev/docs/types#app
+import type { User } from '@prisma/client';
+import type { AuthClient, AuthPageData } from '@rabrennie/sveltekit-auth';
+
 // for information about these interfaces
 declare global {
-	namespace App {
-		// interface Error {}
-		// interface Locals {}
-		// interface PageData {}
-		// interface Platform {}
-	}
+    namespace App {
+        // interface Error {}
+        interface Locals {
+            user?: User;
+            auth: AuthClient;
+        }
+        interface PageData {
+            session: { user?: User };
+            auth: AuthPageData;
+        }
+        // interface Platform {}
+    }
 }
 
 export {};
