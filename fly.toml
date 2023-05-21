@@ -10,6 +10,9 @@ processes = []
   destination="/data"
 
 [env]
+  PORT='8080'
+  ORIGIN='https://sprintna.me'
+  DATABASE_URL='file:/data/sprintname.db'
 
 [experimental]
   auto_rollback = true

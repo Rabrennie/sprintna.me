@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "vite dev",
-    "build": "vite build",
+    "build": "svelte-kit sync && vite build",
     "preview": "vite preview --port 8080 --host 0.0.0.0",
     "check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
     "check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
@@ -12,7 +12,13 @@
     "lint": "prettier --plugin-search-dir . --check . && eslint .",
     "format": "prettier --plugin-search-dir . --write .",
     "storybook": "STORYBOOK=true storybook dev -p 6006",
-    "build-storybook": "STORYBOOK=true storybook build"
+    "build-storybook": "STORYBOOK=true storybook build",
+    "prisma:generate": "prisma generate",
+    "prisma:migrate:deploy": "prisma migrate deploy",
+    "copy:build": "cp -r ./src/prisma ./build/ && cp ./package*.json ./build",
+    "npm:install:build": "cd build && npm ci --omit dev",
+    "postbuild": "npm run copy:build && npm run npm:install:build && echo 'Build Finished'",
+    "postinstall": "npm run prisma:generate"
   },
   "devDependencies": {
     "@storybook/addon-essentials": "^7.0.0-beta.43",
@@ -24,7 +30,7 @@
     "@storybook/sveltekit": "^7.0.0-beta.43",
     "@storybook/testing-library": "^0.0.14-next.1",
     "@sveltejs/adapter-auto": "^1.0.0",
-    "@sveltejs/adapter-node": "^1.1.7",
+    "@sveltejs/adapter-node": "^1.2.4",
     "@sveltejs/kit": "^1.0.0",
     "@types/spotify-api": "^0.0.21",
     "@typescript-eslint/eslint-plugin": "^5.45.0",
