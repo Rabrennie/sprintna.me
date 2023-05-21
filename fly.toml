@@ -9,6 +9,9 @@ processes = []
   source="sprintdata"
   destination="/data"
 
+[build.args]
+  DATABASE_URL='file:/data/sprintname.db'
+
 [env]
   PORT='8080'
   ORIGIN='https://sprintna.me'
