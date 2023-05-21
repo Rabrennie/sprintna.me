@@ -15,7 +15,7 @@
     "build-storybook": "STORYBOOK=true storybook build",
     "prisma:generate": "prisma generate",
     "prisma:migrate:deploy": "prisma migrate deploy",
-    "copy:build": "cp -r ./src/prisma ./build/ && cp ./package*.json ./build",
+    "copy:build": "cp -r ./prisma ./build/ && cp ./package*.json ./build",
     "npm:install:build": "cd build && npm ci --omit dev",
     "postbuild": "npm run copy:build && npm run npm:install:build && echo 'Build Finished'",
     "postinstall": "npm run prisma:generate"
