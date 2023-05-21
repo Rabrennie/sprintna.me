@@ -35,6 +35,6 @@ jobs:
           done < <(echo $ALL_SECRETS | jq -r 'to_entries[] | "\(.key)=\(.value)"' | grep ^FLY_SECRET_)
 
           echo -n "$secrets" | flyctl secrets import --stage
-          fly secrets list
+          flyctl secrets list
       - name: Deploy to Fly.io
         run: flyctl deploy --remote-only
