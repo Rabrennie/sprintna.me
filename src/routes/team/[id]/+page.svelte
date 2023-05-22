@@ -13,6 +13,10 @@
     export let data: PageData;
 </script>
 
+<svelte:head>
+    <title>sprintna.me - {data.team.name}</title>
+</svelte:head>
+
 <div class="flex flex-col gap-8 py-8">
     <div class="flex justify-between items-center">
         <div class="flex gap-4 items-center">

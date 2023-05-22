@@ -7,6 +7,10 @@
     export let data: PageData;
 </script>
 
+<svelte:head>
+    <title>sprintna.me - Invite from {data.name}</title>
+</svelte:head>
+
 <div class="flex w-full h-screen items-center justify-center">
     <Card title={`You have been invited to join "${data.name}"`}>
         <div class="pt-4">
