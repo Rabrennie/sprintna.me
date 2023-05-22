@@ -9,6 +9,10 @@
     export let form: ActionData;
 </script>
 
+<svelte:head>
+    <title>sprintna.me - Create Team</title>
+</svelte:head>
+
 <div class="flex justify-center">
     <h1 class="absolute top-0 p-10 text-4xl text-primary-content">sprintna.me</h1>
     <div class="w-screen h-screen flex items-center justify-center">
