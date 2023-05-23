@@ -8,9 +8,10 @@
     import SearchModal from './SearchModal.svelte';
     import SpinnerModal from './SpinnerModal.svelte';
     import type { PageData } from './$types';
-    import { browser } from '$app/environment';
     import { roomStore } from '$lib/stores/RoomStore';
     import { enhance } from '$app/forms';
+    import { invalidateAll } from '$app/navigation';
+    import { onMount } from 'svelte';
 
     export let data: PageData;
     roomStore.set(data.room);
@@ -19,8 +20,7 @@
 
     async function subscribe() {
         const RoomEventSource = (await import('$lib/room/RoomEventSource')).default;
-        // TODO: handle reconnecting
-        const sse = new RoomEventSource(`${window.location.pathname}/events`);
+        let sse = new RoomEventSource(`${window.location.pathname}/events`);
 
         sse.addEventListener('room:users:update', (event) => {
             console.log('myevent', event);
@@ -34,22 +34,26 @@
             eliminating = $roomStore?.choices[data.userId];
         });
 
-        return () => sse.close();
+
+        sse.onerror = async (ev) => {
+            console.log(ev);
+            sse.close();
+            await invalidateAll();
+            subscribe();
+        };
     }
 
-    if (browser) {
-        subscribe();
-    }
+    onMount(subscribe);
 
     function onSpinnerComplete() {
-    	setTimeout(() => {
+        setTimeout(() => {
             if (!eliminating) {
                 return;
             }
 
             roomStore.onEliminated({ userId: eliminating.userId });
             eliminating = undefined;
-    	}, 1000);
+        }, 1000);
     }
 
     $: winner = Object.values($roomStore?.choices ?? {}).find((c) => !c.eliminated);
