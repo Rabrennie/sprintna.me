@@ -6,26 +6,34 @@ import type { RoomEvent } from '$lib/room/events';
 export const GET = (async ({ params }) => {
     const sseClient = new SseClient();
 
-    rooms.set(params.room, [...(rooms.get(params.room) ?? []), sseClient]);
+    rooms.set(params.room, { ...(rooms.get(params.room) ?? {}), [sseClient.id]: sseClient });
 
     const stream = new ReadableStream({
         start(controller) {
             sseClient.eventEmitter.on('send', (event: RoomEvent, data) => {
-                controller.enqueue(`event: ${event}\ndata:${JSON.stringify(data)}\n\n`);
+                try {
+                    controller.enqueue(`event: ${event}\ndata:${JSON.stringify(data)}\n\n`);
+                } catch {
+                    this.cancel?.();
+                }
             });
 
             sseClient.eventEmitter.on('delaySend', (event: RoomEvent, delay: number, data) => {
-                setTimeout(
-                    () => controller.enqueue(`event: ${event}\ndata:${JSON.stringify(data)}\n\n`),
-                    delay
-                );
+                try {
+                    setTimeout(
+                        () =>
+                            controller.enqueue(`event: ${event}\ndata:${JSON.stringify(data)}\n\n`),
+                        delay
+                    );
+                } catch {
+                    this.cancel?.();
+                }
             });
         },
         cancel() {
-            const clients = rooms.get(params.room) ?? [];
-            const index = clients.indexOf(sseClient);
-            if (index >= 0) {
-                clients.splice(index, 1);
+            const clients = rooms.get(params.room) ?? {};
+            if (clients[sseClient.id]) {
+                delete clients[sseClient.id];
             }
         }
     });

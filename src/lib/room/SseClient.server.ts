@@ -1,11 +1,14 @@
 import { EventEmitter } from 'node:events';
 import type { RoomEvent, RoomEvents } from './events';
+import crypto from 'crypto';
 
 export class SseClient {
     eventEmitter: EventEmitter;
+    id: string;
 
     constructor() {
         this.eventEmitter = new EventEmitter();
+        this.id = crypto.randomBytes(16).toString('base64url');
     }
 
     send<T extends RoomEvent>(event: T, data: RoomEvents[T]) {
