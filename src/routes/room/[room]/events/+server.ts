@@ -29,8 +29,11 @@ export const GET = (async ({ params }) => {
                     this.cancel?.();
                 }
             });
+
+            sseClient.send('ping', Date.now());
         },
         cancel() {
+            sseClient.close();
             const clients = rooms.get(params.room) ?? {};
             if (clients[sseClient.id]) {
                 delete clients[sseClient.id];

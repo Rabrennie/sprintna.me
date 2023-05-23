@@ -32,13 +32,15 @@ export type RoomEvent =
     | 'room:users:update'
     | 'room:choices:update'
     | 'room:state:update'
-    | 'room:album:eliminated';
+    | 'room:album:eliminated'
+    | 'ping';
 
 export const RoomEventSchemas = {
     'room:users:update': usersUpdateSchema,
     'room:choices:update': choicesUpdateSchema,
     'room:state:update': stateUpdateSchema,
-    'room:album:eliminated': albumEliminatedSchema
+    'room:album:eliminated': albumEliminatedSchema,
+    ping: z.number()
 } satisfies {
     [key in RoomEvent]: z.ZodSchema;
 };
