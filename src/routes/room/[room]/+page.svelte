@@ -102,6 +102,9 @@
         <div class="flex gap-x-16 gap-y-8 flex-wrap mt-16 justify-evenly items-stretch">
             {#if !eliminating}
                 {#if $roomStore.state !== RoomState.FINISHED}
+                    {#if Object.keys($roomStore.choices).length === 0}
+                        <div>Nobody has selected an album yet 😢</div>
+                    {/if}
                     {#each $roomStore.users as user}
                         {#if $roomStore.choices[user.id]}
                             <SelectedAlbum
@@ -112,9 +115,6 @@
                                 albumLink={$roomStore.choices[user.id].choice.url}
                                 eliminated={$roomStore.choices[user.id].eliminated}
                             />
-                        {/if}
-                        {#if !$roomStore.choices[user.id]}
-                            <SelectedAlbum name={user.name} />
                         {/if}
                     {/each}
                 {/if}
