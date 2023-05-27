@@ -12,6 +12,7 @@
     import { enhance } from '$app/forms';
     import { invalidateAll } from '$app/navigation';
     import { onMount } from 'svelte';
+    import ArrowLeftIcon from '$lib/components/Icons/ArrowLeftIcon.svelte';
 
     export let data: PageData;
     roomStore.set(data.room);
@@ -33,7 +34,6 @@
         sse.addEventListener('room:album:eliminated', (data) => {
             eliminating = $roomStore?.choices[data.userId];
         });
-
 
         sse.onerror = async (ev) => {
             console.log(ev);
@@ -73,8 +73,16 @@
 
 {#if $roomStore}
     <div class="flex">
-        <a href="https://sprintna.me" class="flex-1 text-lg">sprintna.me</a>
-        <h1 class="flex flex-1 justify-center text-3xl text-primary-content">{$roomStore.name}</h1>
+        <a
+            href="{$page.url.origin}/team/{$roomStore.teamId}"
+            class="flex items-center gap-3 flex-1 text-lg"
+        >
+            <ArrowLeftIcon class="w-4 h-4" />
+            <div>Back to team</div>
+        </a>
+        <h1 class="flex flex-1 justify-center text-3xl text-primary-content items-center">
+            {$roomStore.name}
+        </h1>
         <div class="flex flex-1 justify-end text-lg">
             <div class="avatar-group -space-x-6">
                 {#each $roomStore.users as user}
@@ -94,6 +102,9 @@
         <div class="flex gap-x-16 gap-y-8 flex-wrap mt-16 justify-evenly items-stretch">
             {#if !eliminating}
                 {#if $roomStore.state !== RoomState.FINISHED}
+                    {#if Object.keys($roomStore.choices).length === 0}
+                        <div>Nobody has selected an album yet 😢</div>
+                    {/if}
                     {#each $roomStore.users as user}
                         {#if $roomStore.choices[user.id]}
                             <SelectedAlbum
@@ -104,9 +115,6 @@
                                 albumLink={$roomStore.choices[user.id].choice.url}
                                 eliminated={$roomStore.choices[user.id].eliminated}
                             />
-                        {/if}
-                        {#if !$roomStore.choices[user.id]}
-                            <SelectedAlbum name={user.name} />
                         {/if}
                     {/each}
                 {/if}

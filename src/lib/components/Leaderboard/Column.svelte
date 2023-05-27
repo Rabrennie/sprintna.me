@@ -3,7 +3,7 @@
   Generates an SVG column chart.
  -->
 <script lang="ts">
-    import { stringToHslColor } from '$lib/Utils/stringToHslColor';
+    import { stringToHslColor } from '$lib/utils/stringToHslColor';
     import { getContext } from 'svelte';
 
     // @ts-ignore

@@ -32,11 +32,12 @@ export const load = (async (event) => {
     }
 
     const dbRoom = await rooms.findOrError(getLinkId(event), event.locals.user.id, {
-        include: { choices: true, team: { include: { users: true } } }
+        include: { choices: true, team: { include: { users: { orderBy: { createdAt: 'desc' } } } } }
     });
 
     const room: Room = {
         id: dbRoom.id,
+        teamId: dbRoom.team.id,
         name: dbRoom.name,
         state: dbRoom.step as RoomState,
         users: dbRoom.team.users.map((u) => ({ id: u.id, name: u.name, image: u.image })),

@@ -24,5 +24,6 @@ export default interface Room {
     state: RoomState;
     id: number;
     users: User[];
+    teamId: number;
     choices: { [key: string]: Choice };
 }

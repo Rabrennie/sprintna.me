@@ -7,7 +7,7 @@ interface FormData {
     data?: Record<string, unknown>;
 }
 
-export function createForm() {
+export function createForm(afterSubmit?: () => void) {
     const initialState = (): FormData => ({
         loading: false,
         errors: undefined,
@@ -28,6 +28,7 @@ export function createForm() {
     const onSubmit: SubmitFunction = () => {
         reset();
         toggleLoading(true);
+        afterSubmit?.();
 
         return async ({ update: formUpdate, result }) => {
             if (result.type == 'failure') {

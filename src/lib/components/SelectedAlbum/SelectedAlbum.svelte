@@ -1,7 +1,6 @@
 <script lang="ts">
-    import { stringToHslColor } from '$lib/Utils/stringToHslColor';
+    import { stringToHslColor } from '$lib/utils/stringToHslColor';
     import Confetti from '$lib/components/Confetti/Confetti.svelte';
-    import { tick } from 'svelte';
 
     export let name: string;
     export let albumLink: string = 'https://open.spotify.com/album/5Z9iiGl2FcIfa3BMiv6OIw';
