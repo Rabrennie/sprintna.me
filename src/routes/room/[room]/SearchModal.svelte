@@ -2,6 +2,7 @@
     import { enhance } from '$app/forms';
     import Modal from '$lib/components/Modal/Modal.svelte';
     import TextInput from '$lib/components/TextInput/TextInput.svelte';
+    import { createForm } from '$lib/stores/FormStore';
 
     let modal: Modal;
     let query: string = '';
@@ -22,6 +23,10 @@
 
         searching = false;
     }
+
+    const form = createForm(() => {
+        modal.toggle();
+    });
 </script>
 
 <Modal id="search" bind:this={modal} buttonVariant="primary">
@@ -40,7 +45,7 @@
             {#if albums && albums.length > 0}
                 <div class="mt-3">
                     {#each albums as album}
-                        <form method="POST" action="?/selectAlbum" use:enhance>
+                        <form method="POST" action="?/selectAlbum" use:enhance={form.onSubmit}>
                             <input type="hidden" name="albumArtist" value={album.artists[0].name} />
                             <input type="hidden" name="url" value={album.external_urls.spotify} />
                             <input type="hidden" name="albumImage" value={album.images[0].url} />
