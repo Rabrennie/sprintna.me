@@ -19,7 +19,24 @@ const getTeamOrError = async (event: RequestEvent) => {
     const team = await db.team.findFirst({
         where: { id: result.data.id, users: { some: { id: event.locals.user.id } } },
         include: {
-            users: { select: { name: true, image: true, id: true } },
+            users: {
+                select: {
+                    name: true,
+                    image: true,
+                    id: true,
+                    _count: {
+                        select: {
+                            choices: {
+                                where: {
+                                    eliminated: false,
+                                    room: { step: 'finished', teamId: result.data.id }
+                                }
+                            }
+                        }
+                    }
+                },
+                orderBy: { createdAt: 'desc' }
+            },
             rooms: { include: { choices: true }, orderBy: { createdAt: 'desc' } }
         }
     });

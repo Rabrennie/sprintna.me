@@ -1,6 +1,7 @@
 <script lang="ts">
     import { page } from '$app/stores';
     import Button from '$lib/components/Button/Button.svelte';
+    import Leaderboard from '$lib/components/Leaderboard/Leaderboard.svelte';
     import SelectedAlbum from '$lib/components/SelectedAlbum/SelectedAlbum.svelte';
     import { RoomState } from '../../../types/Room';
     import type { PageData } from './$types';
@@ -11,6 +12,12 @@
     let inviteModal: InviteModal;
 
     export let data: PageData;
+
+    let leaderboardData: { name: string; image: string; count: number }[];
+
+    $: leaderboardData = data.team.users
+        .map((u) => ({ image: u.image, name: u.name, count: u._count.choices }))
+        .sort((a, b) => b.count - a.count);
 </script>
 
 <svelte:head>
@@ -41,6 +48,17 @@
                     </div>
                 {/each}
             </div>
+        </div>
+    </div>
+
+    <div>
+        <h2 class="text-2xl text-slate-100">Leaderboard</h2>
+        <div class="pt-8">
+            {#if !leaderboardData || leaderboardData[0].count === 0}
+                <div>There's no data 😢</div>
+            {:else}
+                <Leaderboard data={leaderboardData} />
+            {/if}
         </div>
     </div>
 

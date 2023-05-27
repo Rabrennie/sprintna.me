@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { stringToHslColor } from '$lib/Utils/stringToHslColor';
     import Confetti from '$lib/components/Confetti/Confetti.svelte';
     import { tick } from 'svelte';
 
@@ -12,16 +13,6 @@
 
     const emojis = ['❌', '👎', '🙅‍♀️', '⛔️', '🙅', '🙅‍♂️', '😭', '🚫', '💀'];
     const eliminatedEmoji = emojis[Math.floor(Math.random() * emojis.length)];
-
-    function stringToHslColor(str: string, s: number, l: number) {
-        var hash = 0;
-        for (var i = 0; i < str.length; i++) {
-            hash = str.charCodeAt(i) + ((hash << 5) - hash);
-        }
-
-        var h = hash % 360;
-        return `hsl(${h}, ${s}%, ${l}%)`;
-    }
 
     async function copy() {
         await navigator.clipboard.writeText(albumName);
