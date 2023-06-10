@@ -2,7 +2,7 @@ import { db, rooms } from '$lib/server/database';
 import { zk } from 'zodkit';
 import type { Actions, PageServerLoad, RequestEvent } from './$types';
 import { z } from 'zod';
-import { error, fail } from '@sveltejs/kit';
+import { error, fail, redirect } from '@sveltejs/kit';
 import { roomsState } from './events/state.server';
 import type Room from '../../../types/Room';
 import { RoomState, type Choice as RoomChoice } from '../../../types/Room';
@@ -28,7 +28,8 @@ const mapChoice = (choice: Choice): RoomChoice => ({
 
 export const load = (async (event) => {
     if (!event.locals.user?.id) {
-        throw error(403, 'nope');
+        event.cookies.set('redirect', `/room/${getLinkId(event)}`, { path: '/', maxAge: 300 });
+        throw redirect(302, '/auth/redirect/google');
     }
 
     const dbRoom = await rooms.findOrError(getLinkId(event), event.locals.user.id, {
