@@ -3,6 +3,7 @@ import { GoogleProvider } from '@rabrennie/sveltekit-auth/providers';
 import { JwtStrategy } from '@rabrennie/sveltekit-auth/session';
 import { env } from '$env/dynamic/private';
 import type { Handle, RequestEvent } from '@sveltejs/kit';
+import { redirect } from '@sveltejs/kit';
 import { sequence } from '@sveltejs/kit/hooks';
 import { db } from '$lib/server/database';
 
@@ -31,6 +32,16 @@ const saveUser = async (event: RequestEvent, profile: Profile) => {
             ...create
         }
     });
+
+    const redirectCookie = event.cookies.get('redirect');
+    if (redirectCookie) {
+        // prevent open redirect
+        const uri = new URL(redirectCookie, 'https://sprintna.me');
+        event.cookies.delete('redirect', { path: '/' });
+        if (uri.origin === 'https://sprintna.me') {
+            throw redirect(302, uri.pathname);
+        }
+    }
 };
 
 export const authHandlerConfig: AuthHandlerConfig = {
