@@ -9,7 +9,7 @@
 </svelte:head>
 
 <div class="flex flex-col">
-    <div class="min-h-screen flex flex-col items-center justify-center">
+    <div class="min-h-screen -m-10 flex flex-col items-center justify-center">
         <div class="flex flex-col items-center w-[40rem] gap-12 text-center">
             <h1 class="font-sans text-5xl text-slate-50 font-bold leading-normal flex flex-col">
                 <span>Say Goodbye to Uninspired</span>
