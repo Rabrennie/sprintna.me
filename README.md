@@ -1,18 +1,16 @@
-# create-svelte
+# Sprintna.me
 
 Everything you need to build a Svelte project, powered by [`create-svelte`](https://github.com/sveltejs/kit/tree/master/packages/create-svelte).
 
-## Creating a project
+## Setup
 
-If you're seeing this, you've probably already done this step. Congrats!
+1. Create a `.env` (you can use `cp .env.example .env` and fill in the blanks).
+2. Setup DB: `npx prisma migrate reset`
+3. Get Google OAuth credentials and set the callback URL to `http://localhost:5173/auth/callback/google`
+4. Get Spotify developer credentials, set callback to `http://localhost:5173`
+5. `npm run dev`
 
-```bash
-# create a new project in the current directory
-npm create svelte@latest
-
-# create a new project in my-app
-npm create svelte@latest my-app
-```
+_If you see a connection error, run `npm run prisma:generate` to regenerate_
 
 ## Developing
 
