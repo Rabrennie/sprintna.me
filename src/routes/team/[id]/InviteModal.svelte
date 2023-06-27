@@ -19,8 +19,10 @@
 
 <Modal id="invite-team-modal" buttonVariant="success" bind:this={modal}>
     <svelte:fragment slot="modal" let:toggle>
-        <h3 class="text-lg font-bold mb-2">Share this link to invite!</h3>
-        <TextInput value={link} disabled />
-        <Button on:click={copy}>Copy</Button>
+        <div class="space-y-2">
+            <h3 class="text-lg font-bold">Share this link to invite!</h3>
+            <TextInput value={link} disabled />
+            <Button on:click={copy}>Copy</Button>
+        </div>
     </svelte:fragment>
 </Modal>
