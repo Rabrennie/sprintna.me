@@ -114,6 +114,7 @@
                                 albumImageUrl={$roomStore.choices[user.id].choice.imageUrl}
                                 albumLink={$roomStore.choices[user.id].choice.url}
                                 eliminated={$roomStore.choices[user.id].eliminated}
+                                cssGradient={$roomStore.choices[user.id].choice.cssGradient}
                             />
                         {/if}
                     {/each}
@@ -126,6 +127,7 @@
                         albumImageUrl={winner.choice.imageUrl}
                         albumLink={winner.choice.url}
                         confetti
+                        cssGradient={winner.choice.cssGradient}
                     />
                     <iframe
                         class="shadow-lg"
@@ -154,10 +156,8 @@
                             albumImageUrl={$roomStore.choices[user.id].choice.imageUrl}
                             albumLink={$roomStore.choices[user.id].choice.url}
                             eliminated
+                            cssGradient={$roomStore.choices[user.id].choice.cssGradient}
                         />
-                    {/if}
-                    {#if user && !$roomStore.choices[user.id]}
-                        <SelectedAlbum name={user.name} />
                     {/if}
                 {/each}
             </div>

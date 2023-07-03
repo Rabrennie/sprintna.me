@@ -11,6 +11,7 @@ export interface Album {
     url: string;
     imageUrl: string;
     title: string;
+    cssGradient: string;
 }
 
 export interface Choice {
