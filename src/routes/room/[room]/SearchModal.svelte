@@ -5,7 +5,7 @@
     import { createForm } from '$lib/stores/FormStore';
 
     let modal: Modal;
-    let query: string = '';
+    let query = '';
     let albums: SpotifyApi.AlbumSearchResponse['albums']['items'] | null = null;
     let searching = false;
 
@@ -46,10 +46,7 @@
                 <div class="mt-3">
                     {#each albums as album}
                         <form method="POST" action="?/selectAlbum" use:enhance={form.onSubmit}>
-                            <input type="hidden" name="albumArtist" value={album.artists[0].name} />
-                            <input type="hidden" name="url" value={album.external_urls.spotify} />
-                            <input type="hidden" name="albumImage" value={album.images[0].url} />
-                            <input type="hidden" name="albumName" value={album.name} />
+                            <input type="hidden" name="id" value={album.id} />
                             <button
                                 type="submit"
                                 class="flex px-3 p-2 gap-x-4 hover:bg-slate-900 cursor-pointer items-center rounded select-none w-full text-left"
