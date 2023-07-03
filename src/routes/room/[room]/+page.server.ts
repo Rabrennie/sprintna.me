@@ -10,6 +10,7 @@ import { RequireAuth } from '@rabrennie/sveltekit-auth/helpers';
 import type { Choice, User } from '@prisma/client';
 import crypto from 'crypto';
 import { getToken, singleAlbum } from '$lib/server/spotify';
+import { getPlaiceholder } from 'plaiceholder';
 
 const getLinkId = (event: RequestEvent) => {
     const { room: linkId } = zk.parseRouteParams(event, { room: z.string().min(1) });
@@ -23,7 +24,8 @@ const mapChoice = (choice: Choice): RoomChoice => ({
         artist: choice.albumArtist,
         title: choice.albumName,
         imageUrl: choice.albumImage,
-        url: `https://open.spotify.com/album/${choice.albumId}`
+        url: `https://open.spotify.com/album/${choice.albumId}`,
+        cssGradient: choice.cssGradient ?? ''
     }
 });
 
@@ -77,9 +79,24 @@ export const actions = {
 
         const token = await getToken();
         const album = await singleAlbum(result.data.id, token);
+        const src = album?.images?.at(-1)?.url;
 
-        if (!album) {
+        if (!album || !src) {
             return fail(400, { error: 'Album does not exist' });
+        }
+
+        let cssGradient: string | null = null;
+
+        try {
+            const buffer = await fetch(src).then(async (res) =>
+                Buffer.from(await res.arrayBuffer())
+            );
+
+            const { css } = await getPlaiceholder(buffer);
+
+            cssGradient = css.backgroundImage;
+        } catch (err) {
+            return fail(400, { error: 'Something went wrong' });
         }
 
         const where = {
@@ -94,7 +111,8 @@ export const actions = {
             albumArtist: album.artists[0].name,
             albumImage: album.images[0].url,
             albumName: album.name,
-            eliminated: false
+            eliminated: false,
+            cssGradient
         };
 
         const dbChoice = await db.choice.upsert({

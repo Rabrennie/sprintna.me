@@ -13,7 +13,8 @@ const choicesUpdateSchema = z.object({
                 artist: z.string(),
                 url: z.string(),
                 imageUrl: z.string(),
-                title: z.string()
+                title: z.string(),
+                cssGradient: z.string(),
             }),
             eliminated: z.boolean()
         })

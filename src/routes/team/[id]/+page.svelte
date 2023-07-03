@@ -95,6 +95,7 @@
                     artistName={choice.albumArtist}
                     albumImageUrl={choice.albumImage}
                     eliminated={choice.eliminated}
+                    cssGradient={choice.cssGradient}
                 />
             {/each}
             {#if room.choices.length === 0}

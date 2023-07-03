@@ -1,14 +1,18 @@
 <script lang="ts">
     import { stringToHslColor } from '$lib/utils/stringToHslColor';
     import Confetti from '$lib/components/Confetti/Confetti.svelte';
+    import Intersect from '$lib/actions/Intersect';
 
     export let name: string;
     export let albumLink: string = 'https://open.spotify.com/album/5Z9iiGl2FcIfa3BMiv6OIw';
     export let albumName: string = 'Not Selected';
     export let artistName: string = 'Not Selected';
     export let albumImageUrl: string | null = null;
+    export let cssGradient: string;
     export let eliminated: boolean = false;
     export let confetti: boolean = false;
+
+    let imageLoaded = false;
 
     const emojis = ['❌', '👎', '🙅‍♀️', '⛔️', '🙅', '🙅‍♂️', '😭', '🚫', '💀'];
     const eliminatedEmoji = emojis[Math.floor(Math.random() * emojis.length)];
@@ -16,9 +20,15 @@
     async function copy() {
         await navigator.clipboard.writeText(albumName);
     }
+
+    function loadImage() {
+        const img = new Image();
+        img.onload = () => imageLoaded = true;
+        img.src = albumImageUrl ?? '';
+    }
 </script>
 
-<div class="indicator">
+<div class="indicator" use:Intersect={{ options: { once: true }, onIntersect: loadImage }}>
     <div
         class="indicator-item indicator-top indicator-center badge text-primary-content"
         style="background-color: {stringToHslColor(name, 55, 60)}"
@@ -33,12 +43,23 @@
                 </div>
             </div>
         {/if}
-        <a href={albumLink}>
+        <a
+            href={albumLink}
+            class="w-52 h-52 overflow-hidden flex group-hover:scale-105 transition-transform"
+        >
             <Confetti fireOnLoad={confetti}>
-                <div
-                    class="bg-slate-300 bg-cover w-52 h-52 shadow-lg shadow-slate-900 mb-4 group-hover:scale-105 transition-transform album-image"
-                    style={albumImageUrl && `background-image: url(${albumImageUrl})`}
-                />
+                {#if cssGradient && !imageLoaded}
+                    <div
+                        class="bg-slate-300 bg-cover w-52 h-52 shadow-lg shadow-slate-900 mb-4 album-image blur-xl scale-125 bg-no-repeat"
+                        style={`background-image: ${cssGradient}; background-position: 0 0 ,0 33.33333333333333%,0 66.66666666666666%,0 100%; background-size: 100% 25%;`}
+                    />
+                {/if}
+                {#if imageLoaded}
+                    <div
+                        class="bg-slate-300 bg-cover w-52 h-52 shadow-lg shadow-slate-900 mb-4 album-image bg-no-repeat"
+                        style={`background-image: url(${albumImageUrl});`}
+                    />
+                {/if}
             </Confetti>
         </a>
 
