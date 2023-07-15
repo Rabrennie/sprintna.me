@@ -24,20 +24,42 @@
     <title>sprintna.me - {data.team.name}</title>
 </svelte:head>
 
-<div class="flex flex-col gap-8 py-8">
-    <div class="flex justify-between items-center">
-        <div class="flex gap-4 items-center">
-            <h1 class="text-4xl text-yellow-300">{$page.data.team.name}</h1>
-            <Button block={false} variant="ghost" on:click={() => inviteModal.toggle()}
-                >Invite</Button
-            >
+<div class="flex flex-col gap-8 pb-8">
+    <div class="navbar mt-4 p-0">
+        <div class="navbar-start">
+            <div class="dropdown">
+                <label tabindex="0" class="btn btn-ghost btn-circle">
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        class="h-5 w-5"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                        ><path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            stroke-width="2"
+                            d="M4 6h16M4 12h16M4 18h7"
+                        /></svg
+                    >
+                </label>
+                <ul
+                    tabindex="0"
+                    class="menu menu-sm dropdown-content mt-3 z-[1] p-2 shadow bg-base-100 rounded-box w-52"
+                >
+                    <li><button on:click={() => inviteModal.toggle()}>Invite Users</button></li>
+                </ul>
+            </div>
         </div>
-        <div>
-            <div class="avatar-group -space-x-6 overflow-visible">
+        <div class="navbar-center">
+            <div class="normal-case text-3xl text-yellow-300">{$page.data.team.name}</div>
+        </div>
+        <div class="navbar-end">
+            <div class="avatar-group -space-x-6 overflow-visible hidden md:flex">
                 {#each $page.data.team.users as user}
                     <div class="tooltip" data-tip={user.name}>
                         <div class="avatar">
-                            <div class="w-12">
+                            <div class="w-10">
                                 <img
                                     src={user.image}
                                     alt={user.name}
@@ -72,7 +94,7 @@
     </div>
 
     {#each data.team.rooms as room}
-        <a href={`/room/${room.linkId}`}>
+        <a href={`/room/${room.linkId}`} class="group overflow-hidden">
             <div class="divider text-xl mt-8">
                 <div class="tooltip capitalize" data-tip={room.step}>
                     <div
@@ -82,22 +104,38 @@
                             ? 'badge-warning'
                             : ''} {room.step === RoomState.SELECTING ? 'badge-primary' : ''}"
                     />
-                    <span class="normal-case">{room.name}</span>
+                    <span class="normal-case group-hover:underline">{room.name}</span>
                 </div>
             </div>
         </a>
-        <div class="flex gap-x-16 gap-y-8 flex-wrap justify-evenly items-stretch">
-            {#each room.choices.sort((a, b) => a.eliminated - b.eliminated) as choice}
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            {#each room.choices.filter((c) => room.step !== RoomState.FINISHED || !c.eliminated) as choice}
                 <SelectedAlbum
                     name={data.team.users.find((u) => u.id === choice.userId).name ?? ''}
-                    albumName={choice.albumName}
-                    albumLink={`https://open.spotify.com/album/${choice.albumId}`}
-                    artistName={choice.albumArtist}
-                    albumImageUrl={choice.albumImage}
-                    eliminated={choice.eliminated}
+                    title={choice.albumName}
+                    url={`https://open.spotify.com/album/${choice.albumId}`}
+                    subtitle={choice.albumArtist}
+                    image={choice.albumImage}
                     cssGradient={choice.cssGradient}
+                    avatar={data.team.users.find((u) => u.id === choice.userId).image ?? ''}
+                    small={false}
+                    winner={room.step === RoomState.FINISHED}
                 />
             {/each}
+            <div class="flex flex-col gap-4">
+                {#each room.choices.filter((c) => room.step === RoomState.FINISHED && c.eliminated) as choice}
+                    <SelectedAlbum
+                        name={data.team.users.find((u) => u.id === choice.userId).name ?? ''}
+                        title={choice.albumName}
+                        url={`https://open.spotify.com/album/${choice.albumId}`}
+                        subtitle={choice.albumArtist}
+                        image={choice.albumImage}
+                        cssGradient={choice.cssGradient}
+                        avatar={data.team.users.find((u) => u.id === choice.userId).image ?? ''}
+                        small={true}
+                    />
+                {/each}
+            </div>
             {#if room.choices.length === 0}
                 <div>No choices</div>
             {/if}
