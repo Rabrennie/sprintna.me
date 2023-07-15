@@ -53,15 +53,21 @@
             />
         </a>
     {/if}
-    <div class="z-10 flex justify-between w-full items-center px-9">
-        <div class="flex {small ? '' : 'py-6 flex-col h-full sm:gap-0 gap-4'} w-full justify-between">
-            <div>
-                <div class="flex gap-2">
+    <div
+        class="z-10 flex justify-between w-full items-center px-9 flex-shrink flex-grow overflow-hidden"
+    >
+        <div
+            class="flex {small
+                ? 'gap-4'
+                : 'py-6 flex-col h-full sm:gap-0 gap-4'} w-full justify-between overflow-hidden"
+        >
+            <div class=" flex flex-shrink overflow-hidden flex-col">
+                <div class="flex gap-2 flex-shrink overflow-hidden">
                     <a
                         href={url}
                         target="_blank"
                         rel="noreferrer"
-                        class="text-white hover:underline">{title}</a
+                        class="text-white hover:underline truncate flex-shrink">{title}</a
                     >
                     <button
                         on:click={copy}
