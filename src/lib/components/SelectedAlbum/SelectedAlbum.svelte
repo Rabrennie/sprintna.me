@@ -28,7 +28,7 @@
 </script>
 
 <div
-    class="{height} overflow-hidden flex rounded  {small
+    class="{height.replace('h-auto', 'h-fit')} overflow-hidden flex rounded  {small
         ? 'items-center flex-row'
         : 'flex-col sm:flex-row'} shadow shadow-slate-900 relative group"
     use:Intersect={{ options: { once: true }, onIntersect: loadImage }}
@@ -41,14 +41,14 @@
     {/if}
     {#if cssGradient && !imageLoaded}
         <div
-            class="z-10 bg-slate-900 bg-cover {width} {height} album-image blur-xl scale-125 bg-no-repeat shrink-0"
+            class="z-10 bg-slate-900 bg-cover {width} {height} album-image blur-xl scale-125 bg-no-repeat shrink-0 aspect-square"
             style={`background-image: ${cssGradient}; background-position: 0 0 ,0 33.33333333333333%,0 66.66666666666666%,0 100%; background-size: 100% 25%;`}
         />
     {/if}
     {#if imageLoaded}
         <a href={url} target="_blank" rel="noreferrer" class="z-10">
             <div
-                class="z-10 bg-slate-300 bg-cover {height} {width} album-image bg-no-repeat shrink-0 aspect-square"
+                class="z-10 bg-cover {height} {width} album-image bg-no-repeat shrink-0 aspect-square"
                 style={`background-image: url(${image});`}
             />
         </a>
