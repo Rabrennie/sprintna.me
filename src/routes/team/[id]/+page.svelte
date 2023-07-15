@@ -21,7 +21,7 @@
 </script>
 
 <svelte:head>
-    <title>sprintna.me - {data.team.name}</title>
+    <title>sprintna.me - {$page.data.team.name}</title>
 </svelte:head>
 
 <div class="flex flex-col gap-8 pb-8">
