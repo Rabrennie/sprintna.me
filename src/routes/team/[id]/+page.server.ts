@@ -79,5 +79,29 @@ export const actions = {
         });
 
         throw redirect(303, `/room/${room.linkId}`);
+    },
+
+    deleteRoom: async (event) => {
+        const result = await zk.parseFormDataSafe(event, {
+            id: z.number({ coerce: true }).positive().min(1)
+        });
+
+        if (!result.success) {
+            return result.response;
+        }
+
+        const team = await getTeamOrError(event);
+        const room = await db.room.findFirst({
+            where: { id: result.data.id, teamId: team.id }
+        });
+
+        if (!room) {
+            throw error(403, 'Unauthorized');
+        }
+
+        await db.choice.deleteMany({ where: { roomId: room.id } });
+        await db.room.delete({ where: { id: room.id } });
+
+        throw redirect(303, `/team/${room.teamId}`);
     }
 } satisfies Actions;

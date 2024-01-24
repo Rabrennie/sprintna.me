@@ -6,14 +6,17 @@
     import { RoomState } from '../../../types/Room';
     import type { PageData } from './$types';
     import CreateRoomModal from './CreateRoomModal.svelte';
+    import DeleteRoomModal from './DeleteRoomModal.svelte';
     import InviteModal from './InviteModal.svelte';
 
     let createRoomModal: CreateRoomModal;
     let inviteModal: InviteModal;
+    let deleteRoomModal: DeleteRoomModal;
 
     export let data: PageData;
 
     let leaderboardData: { name: string; image: string; count: number }[];
+    let deletingRoomId: number | null = null;
 
     $: leaderboardData = data.team.users
         .map((u) => ({ image: u.image, name: u.name, count: u._count.choices }))
@@ -24,7 +27,7 @@
     <title>sprintna.me - {$page.data.team.name}</title>
 </svelte:head>
 
-<div class="flex flex-col gap-8 pb-8">
+<div class="flex flex-col gap-16 pb-8">
     <div class="navbar mt-4 p-0">
         <div class="navbar-start">
             <div class="dropdown">
@@ -94,36 +97,52 @@
     </div>
 
     {#each data.team.rooms as room}
-        <a href={`/room/${room.linkId}`} class="group overflow-hidden">
-            <div class="divider text-xl mt-8">
-                <div class="tooltip capitalize" data-tip={room.step}>
-                    <div
-                        class="badge badge-xs capitalize mr-2 {room.step === RoomState.FINISHED
-                            ? 'badge-success'
-                            : ''} {room.step === RoomState.ELIMINATING
-                            ? 'badge-warning'
-                            : ''} {room.step === RoomState.SELECTING ? 'badge-primary' : ''}"
-                    />
-                    <span class="normal-case group-hover:underline">{room.name}</span>
+        <hr class="border-slate-700" />
+        <div class="flex flex-col gap-8 pb-4">
+            <div class="flex items-center gap-3">
+                <a href={`/room/${room.linkId}`} class="hover:underline">
+                    <h3 class="text-2xl text-slate-100">
+                        {room.name}
+                    </h3>
+                </a>
+                <div class="dropdown">
+                    <label
+                        tabindex="0"
+                        class="flex items-center text-slate-500 cursor-pointer pt-1"
+                    >
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            stroke-width="1.5"
+                            stroke="currentColor"
+                            class="w-6 h-6"
+                        >
+                            <path
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                d="M6.75 12a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0ZM12.75 12a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0ZM18.75 12a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Z"
+                            />
+                        </svg>
+                    </label>
+                    <ul
+                        tabindex="0"
+                        class="dropdown-content menu p-2 shadow bg-base-100 rounded-box w-52"
+                    >
+                        <li>
+                            <button
+                                class="text-error"
+                                on:click={() => {
+                                    deletingRoomId = room.id;
+                                    deleteRoomModal.toggle();
+                                }}>Delete room</button
+                            >
+                        </li>
+                    </ul>
                 </div>
             </div>
-        </a>
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-            {#each room.choices.filter((c) => room.step !== RoomState.FINISHED || !c.eliminated) as choice}
-                <SelectedAlbum
-                    name={data.team.users.find((u) => u.id === choice.userId).name ?? ''}
-                    title={choice.albumName}
-                    url={`https://open.spotify.com/album/${choice.albumId}`}
-                    subtitle={choice.albumArtist}
-                    image={choice.albumImage}
-                    cssGradient={choice.cssGradient}
-                    avatar={data.team.users.find((u) => u.id === choice.userId).image ?? ''}
-                    small={false}
-                    winner={room.step === RoomState.FINISHED}
-                />
-            {/each}
-            <div class="flex flex-col gap-4">
-                {#each room.choices.filter((c) => room.step === RoomState.FINISHED && c.eliminated) as choice}
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                {#each room.choices.filter((c) => room.step !== RoomState.FINISHED || !c.eliminated) as choice}
                     <SelectedAlbum
                         name={data.team.users.find((u) => u.id === choice.userId).name ?? ''}
                         title={choice.albumName}
@@ -132,13 +151,32 @@
                         image={choice.albumImage}
                         cssGradient={choice.cssGradient}
                         avatar={data.team.users.find((u) => u.id === choice.userId).image ?? ''}
-                        small={true}
+                        small={false}
+                        winner={room.step === RoomState.FINISHED}
                     />
                 {/each}
+                {#if room.step === RoomState.FINISHED}
+                    <div class="flex flex-col gap-4">
+                        {#each room.choices.filter((c) => room.step === RoomState.FINISHED && c.eliminated) as choice}
+                            <SelectedAlbum
+                                name={data.team.users.find((u) => u.id === choice.userId).name ??
+                                    ''}
+                                title={choice.albumName}
+                                url={`https://open.spotify.com/album/${choice.albumId}`}
+                                subtitle={choice.albumArtist}
+                                image={choice.albumImage}
+                                cssGradient={choice.cssGradient}
+                                avatar={data.team.users.find((u) => u.id === choice.userId).image ??
+                                    ''}
+                                small={true}
+                            />
+                        {/each}
+                    </div>
+                {/if}
+                {#if room.choices.length === 0}
+                    <div>No choices</div>
+                {/if}
             </div>
-            {#if room.choices.length === 0}
-                <div>No choices</div>
-            {/if}
         </div>
     {/each}
 
@@ -147,4 +185,5 @@
         bind:this={inviteModal}
         link={new URL(`/invite/${data.team.invite}`, $page.url.origin).toString()}
     />
+    <DeleteRoomModal bind:this={deleteRoomModal} id={deletingRoomId} />
 </div>
