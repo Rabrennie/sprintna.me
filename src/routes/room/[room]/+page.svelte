@@ -11,13 +11,14 @@
     import { roomStore } from '$lib/stores/RoomStore';
     import { enhance } from '$app/forms';
     import { invalidateAll } from '$app/navigation';
-    import { onMount } from 'svelte';
+    import { onDestroy, onMount } from 'svelte';
     import ArrowLeftIcon from '$lib/components/Icons/ArrowLeftIcon.svelte';
     import { quintOut } from 'svelte/easing';
     import { crossfade } from 'svelte/transition';
     import { flip } from 'svelte/animate';
     import type User from '../../../types/User';
     import Confetti from '$lib/components/Confetti/Confetti.svelte';
+    import type RoomEventSource from '$lib/room/RoomEventSource';
 
     const [send, receive] = crossfade({
         duration: 300,
@@ -41,10 +42,11 @@
     roomStore.set(data.room);
 
     let eliminating: Choice | undefined = undefined;
+    let sse: RoomEventSource | undefined;
 
     async function subscribe() {
         const RoomEventSource = (await import('$lib/room/RoomEventSource')).default;
-        let sse = new RoomEventSource(`${window.location.pathname}/events`);
+        sse = new RoomEventSource(`${window.location.pathname}/events`);
 
         sse.addEventListener('room:users:update', (event) => {
             console.log('myevent', event);
@@ -60,13 +62,14 @@
 
         sse.onerror = async (ev) => {
             console.log(ev);
-            sse.close();
+            sse?.close();
             await invalidateAll();
             subscribe();
         };
     }
 
     onMount(subscribe);
+    onDestroy(() => sse?.close());
 
     function onSpinnerComplete() {
         setTimeout(async () => {
