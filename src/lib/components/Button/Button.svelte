@@ -9,7 +9,8 @@
         primary: 'btn-primary',
         success: 'btn-success',
         warning: 'btn-warning',
-        ghost: 'btn-ghost'
+        ghost: 'btn-ghost',
+        error: 'btn-error'
     };
 
     interface $$Props extends HTMLButtonAttributes {
