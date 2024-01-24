@@ -13,9 +13,9 @@
                 <li
                     class="tooltip tooltip-top"
                     data-tip={`${d.name} - ${d.count}`}
-                    style="--count: {d.count};
-                       --index: {i};
-                       --fill: {d.count > 0 ? stringToHslColor(d.name, 55, 60) : 'transparent'};"
+                    style="--count: {d.count}; --index: {i}; --fill: {d.count > 0
+                        ? stringToHslColor(d.name, 55, 60)
+                        : 'transparent'};"
                 >
                     {d.count}
                 </li>
@@ -25,11 +25,7 @@
     <ul class="labels">
         {#each data as d, i}
             {#if d.count > 0}
-                <li
-                    data-tip={`${d.name} - ${d.count}`}
-                    style="--count: {d.count};
-                       --index: {i};"
-                >
+                <li data-tip={`${d.name} - ${d.count}`} style="--count: {d.count}; --index: {i};">
                     <div class="avatar">
                         <div class="w-8 rounded-full">
                             <img src={d.image} alt={d.name} />
