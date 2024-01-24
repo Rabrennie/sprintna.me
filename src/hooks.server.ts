@@ -7,46 +7,7 @@ import { redirect } from '@sveltejs/kit';
 import { sequence } from '@sveltejs/kit/hooks';
 import { db } from '$lib/server/database';
 
-import { getToken, singleAlbum } from '$lib/server/spotify';
-import { getPlaiceholder } from 'plaiceholder';
-
 const { AUTH_SECRET, GOOGLE_ID, GOOGLE_SECRET } = env;
-
-const fetchAlbumCssGradients = async () => {
-    const token = await getToken();
-
-    const choices = await db.choice.findMany({ where: { cssGradient: null } });
-
-    const promises = choices.map(async (c) => {
-        const album = await singleAlbum(c.albumId, token);
-        const src = album?.images?.at(-1)?.url;
-
-        if (album && src) {
-            try {
-                const buffer = await fetch(src).then(async (res) =>
-                    Buffer.from(await res.arrayBuffer())
-                );
-
-                const { css } = await getPlaiceholder(buffer);
-
-                await db.choice.update({
-                    where: { id: c.id },
-                    data: { cssGradient: css.backgroundImage },
-                });
-            } catch (err) {
-                console.log(`Couldn't find album image from ${JSON.stringify(c)}`);
-            }
-        } else {
-            console.log(`Couldn't find album image from ${JSON.stringify(c)}`);
-        }
-
-        return c;
-    });
-
-    await Promise.all(promises);
-};
-
-fetchAlbumCssGradients();
 
 const saveUser = async (event: RequestEvent, profile: Profile) => {
     const update = {
