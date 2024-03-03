@@ -10,6 +10,7 @@
     export let avatar = '';
     export let small = false;
     export let winner = false;
+    export let type: 'albums' | 'movies' = 'albums';
 
     let imageLoaded = false;
 
@@ -24,7 +25,8 @@
     }
 
     $: height = small ? 'h-[4.5rem]' : 'h-auto sm:h-40';
-    $: width = small ? 'w-[4.5rem]' : 'w-full sm:w-40';
+    $: width = 'auto';
+    $: aspect = type === 'albums' ? 'aspect-square' : 'aspect-[2/3]';
 </script>
 
 <div
@@ -41,14 +43,14 @@
     {/if}
     {#if cssGradient && !imageLoaded}
         <div
-            class="z-10 bg-slate-900 bg-cover {width} {height} album-image blur-xl scale-125 bg-no-repeat shrink-0 aspect-square"
+            class="z-10 bg-slate-900 bg-cover {width} {height} album-image blur-xl scale-125 bg-no-repeat shrink-0 {aspect}"
             style={`background-image: ${cssGradient}; background-position: 0 0 ,0 33.33333333333333%,0 66.66666666666666%,0 100%; background-size: 100% 25%;`}
         />
     {/if}
     {#if imageLoaded}
         <a href={url} target="_blank" rel="noreferrer" class="z-10">
             <div
-                class="z-10 bg-cover {height} {width} album-image bg-no-repeat shrink-0 aspect-square"
+                class="z-10 bg-cover {height} {width} album-image bg-no-repeat shrink-0 {aspect}"
                 style={`background-image: url(${image});`}
             />
         </a>

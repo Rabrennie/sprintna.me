@@ -19,6 +19,7 @@
     import type User from '../../../types/User';
     import Confetti from '$lib/components/Confetti/Confetti.svelte';
     import type RoomEventSource from '$lib/room/RoomEventSource';
+    import MovieInfo from './MovieInfo.svelte';
 
     const [send, receive] = crossfade({
         duration: 300,
@@ -141,7 +142,9 @@
     <div class="mt-8">
         <RoomSteps />
         {#if userChoices.length === 0}
-            <div class="text-center mt-16">Nobody has selected an album yet 😢</div>
+            <div class="text-center mt-16">
+                Nobody has selected a{$roomStore.type === 'albums' ? 'n album' : ' movie'} yet 😢
+            </div>
         {/if}
         {#if !eliminating}
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mt-16">
@@ -162,11 +165,12 @@
                                 cssGradient={choice.cssGradient}
                                 avatar={user.image ?? ''}
                                 winner={$roomStore.state === RoomState.FINISHED}
+                                type={$roomStore.type}
                             />
                         </Confetti>
                     </div>
                 {/each}
-                {#if $roomStore.state === RoomState.FINISHED && winner}
+                {#if $roomStore.state === RoomState.FINISHED && winner && $roomStore.type === 'albums'}
                     <iframe
                         class="shadow-lg w-full"
                         style="border-radius:12px"
@@ -178,6 +182,9 @@
                         allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
                         title={winner.choice.title}
                     />
+                {/if}
+                {#if $roomStore.state === RoomState.FINISHED && winner && $roomStore.type === 'movies'}
+                    <MovieInfo movieId={winner.choice.url.split('/').pop()} gradient={winner.choice.cssGradient} />
                 {/if}
             </div>
 
@@ -199,6 +206,7 @@
                                 url={choice.url}
                                 cssGradient={choice.cssGradient}
                                 avatar={user.image ?? ''}
+                                type={$roomStore.type}
                             />
                         </div>
                     {/each}
@@ -207,7 +215,7 @@
 
             <div class="mt-16 flex gap-x-8 justify-center">
                 {#if $roomStore.state === RoomState.SELECTING}
-                    <SearchModal on:select={() => {}} />
+                    <SearchModal on:select={() => {}} type={$roomStore.type} />
                     {#if userChoices.length >= 2}
                         <ContinueModal />
                     {/if}
@@ -215,7 +223,7 @@
                 {#if $roomStore.state === RoomState.ELIMINATING}
                     <form method="POST" action="?/eliminate" use:enhance>
                         <Button type="submit" block={false} variant="warning"
-                            >Eliminate an album</Button
+                            >Eliminate an {$roomStore.type === 'albums' ? 'album' : 'movie'}</Button
                         >
                     </form>
                 {/if}

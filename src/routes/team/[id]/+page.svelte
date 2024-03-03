@@ -146,13 +146,16 @@
                     <SelectedAlbum
                         name={data.team.users.find((u) => u.id === choice.userId).name ?? ''}
                         title={choice.albumName}
-                        url={`https://open.spotify.com/album/${choice.albumId}`}
+                        url={room.type === 'albums'
+                            ? `https://open.spotify.com/album/${choice.albumId}`
+                            : `https://www.imdb.com/title/${choice.albumId}`}
                         subtitle={choice.albumArtist}
                         image={choice.albumImage}
                         cssGradient={choice.cssGradient}
                         avatar={data.team.users.find((u) => u.id === choice.userId).image ?? ''}
                         small={false}
                         winner={room.step === RoomState.FINISHED}
+                        type={room.type}
                     />
                 {/each}
                 {#if room.step === RoomState.FINISHED}
@@ -162,13 +165,16 @@
                                 name={data.team.users.find((u) => u.id === choice.userId).name ??
                                     ''}
                                 title={choice.albumName}
-                                url={`https://open.spotify.com/album/${choice.albumId}`}
+                                url={room.type === 'albums'
+                                    ? `https://open.spotify.com/album/${choice.albumId}`
+                                    : `https://www.imdb.com/title/${choice.albumId}`}
                                 subtitle={choice.albumArtist}
                                 image={choice.albumImage}
                                 cssGradient={choice.cssGradient}
                                 avatar={data.team.users.find((u) => u.id === choice.userId).image ??
                                     ''}
                                 small={true}
+                                type={room.type}
                             />
                         {/each}
                     </div>

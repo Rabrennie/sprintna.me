@@ -30,6 +30,11 @@
             use:enhance={form.onSubmit}
         >
             <TextInput name="name" placeholder="Room Name" errors={$form.errors} />
+            <select class="select select-bordered w-full" name="type">
+                <option disabled selected>Room type</option>
+                <option value="albums">Albums</option>
+                <option value="movies">Movies</option>
+            </select>
             <div class="modal-action">
                 <Button variant="ghost" block={false} on:click={toggle} disabled={$form.loading}>
                     Cancel
