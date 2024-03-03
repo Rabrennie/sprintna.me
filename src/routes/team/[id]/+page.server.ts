@@ -61,7 +61,8 @@ export const load = RequireAuth(loadFunction);
 export const actions = {
     createRoom: async (event) => {
         const result = await zk.parseFormDataSafe(event, {
-            name: z.string().min(1, 'Room name is required')
+            name: z.string().min(1, 'Room name is required'),
+            type: z.enum(['albums', 'movies'])
         });
 
         if (!result.success) {
@@ -74,7 +75,8 @@ export const actions = {
             data: {
                 name: result.data.name,
                 linkId: crypto.randomBytes(16).toString('base64url'),
-                teamId: team.id
+                teamId: team.id,
+                type: result.data.type
             }
         });
 
