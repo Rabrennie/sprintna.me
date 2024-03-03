@@ -58,7 +58,7 @@ model Room {
     name      String
     step      String @default("selecting")
     createdAt Int    @default(dbgenerated("(strftime('%s', 'now'))"))
-    type      String @default("spotify")
+    type      String @default("albums")
 
     choices Choice[]
 
