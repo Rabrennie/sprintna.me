@@ -24,6 +24,7 @@ export default interface Room {
     name: string;
     state: RoomState;
     id: number;
+    type: 'albums' | 'movies';
     users: User[];
     teamId: number;
     choices: { [key: string]: Choice };

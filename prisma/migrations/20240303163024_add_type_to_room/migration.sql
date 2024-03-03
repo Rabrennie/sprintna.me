@@ -24,7 +24,7 @@ CREATE TABLE "new_Room" (
     "name" TEXT NOT NULL,
     "step" TEXT NOT NULL DEFAULT 'selecting',
     "createdAt" INTEGER NOT NULL DEFAULT (strftime('%s', 'now')),
-    "type" TEXT NOT NULL DEFAULT 'spotify',
+    "type" TEXT NOT NULL DEFAULT 'albums',
     "teamId" INTEGER NOT NULL,
     CONSTRAINT "Room_teamId_fkey" FOREIGN KEY ("teamId") REFERENCES "Team" ("id") ON DELETE RESTRICT ON UPDATE CASCADE
 );

@@ -9,7 +9,8 @@ import { RoomState, type Choice as RoomChoice } from '../../../types/Room';
 import { RequireAuth } from '@rabrennie/sveltekit-auth/helpers';
 import type { Choice, User } from '@prisma/client';
 import crypto from 'crypto';
-import { getToken, singleAlbum } from '$lib/server/spotify';
+import * as Spotify from '$lib/server/spotify';
+import * as OMDb from '$lib/server/omdb';
 import { getPlaiceholder } from 'plaiceholder';
 
 const getLinkId = (event: RequestEvent) => {
@@ -17,14 +18,17 @@ const getLinkId = (event: RequestEvent) => {
     return linkId;
 };
 
-const mapChoice = (choice: Choice): RoomChoice => ({
+const mapChoice = (choice: Choice, type: 'albums' | 'movies'): RoomChoice => ({
     userId: choice.userId,
     eliminated: choice.eliminated,
     choice: {
         artist: choice.albumArtist,
         title: choice.albumName,
         imageUrl: choice.albumImage,
-        url: `https://open.spotify.com/album/${choice.albumId}`,
+        url:
+            type === 'albums'
+                ? `https://open.spotify.com/album/${choice.albumId}`
+                : `https://www.imdb.com/title/${choice.albumId}`,
         cssGradient: choice.cssGradient ?? ''
     }
 });
@@ -43,9 +47,12 @@ export const load = (async (event) => {
         id: dbRoom.id,
         teamId: dbRoom.team.id,
         name: dbRoom.name,
+        type: dbRoom.type,
         state: dbRoom.step as RoomState,
         users: dbRoom.team.users.map((u) => ({ id: u.id, name: u.name, image: u.image })),
-        choices: Object.fromEntries(dbRoom.choices.map((c) => [c.userId, mapChoice(c)]))
+        choices: Object.fromEntries(
+            dbRoom.choices.map((c) => [c.userId, mapChoice(c, dbRoom.type)])
+        )
     };
 
     return {
@@ -77,18 +84,45 @@ export const actions = {
             return result.response;
         }
 
-        const token = await getToken();
-        const album = await singleAlbum(result.data.id, token);
-        const src = album?.images?.at(-1)?.url;
-
-        if (!album || !src) {
-            return fail(400, { error: 'Album does not exist' });
-        }
-
+        let albumId: string | undefined;
+        let albumArtist: string | undefined;
+        let albumImage: string | undefined;
+        let albumName: string | undefined;
         let cssGradient: string | null = null;
 
+        if (dbRoom.type === 'albums') {
+            const token = await Spotify.getToken();
+            const album = await Spotify.singleAlbum(result.data.id, token);
+            const src = album?.images?.at(-1)?.url;
+
+            if (!album || !src) {
+                return fail(400, { error: 'Album does not exist' });
+            }
+
+            albumId = album.id;
+            albumArtist = album.artists[0].name;
+            albumImage = src;
+            albumName = album.name;
+        } else if (dbRoom.type === 'movies') {
+            const token = await OMDb.getToken();
+            const movie = await OMDb.singleMovie(result.data.id, token);
+
+            if (!movie || movie.Poster === 'N/A') {
+                return fail(400, { error: 'Movie does not exist' });
+            }
+
+            albumId = movie.imdbID;
+            albumArtist = movie.Year;
+            albumImage = movie.Poster;
+            albumName = movie.Title;
+        }
+
+        if (!albumId || !albumArtist || !albumImage || !albumName) {
+            return fail(400, { error: 'Missing data' });
+        }
+
         try {
-            const buffer = await fetch(src).then(async (res) =>
+            const buffer = await fetch(albumImage).then(async (res) =>
                 Buffer.from(await res.arrayBuffer())
             );
 
@@ -107,10 +141,10 @@ export const actions = {
         };
 
         const albumData = {
-            albumId: album.id,
-            albumArtist: album.artists[0].name,
-            albumImage: album.images[0].url,
-            albumName: album.name,
+            albumId,
+            albumArtist,
+            albumImage,
+            albumName,
             eliminated: false,
             cssGradient
         };
@@ -125,7 +159,7 @@ export const actions = {
         });
 
         roomsState.broadcast(dbRoom.linkId, 'room:choices:update', {
-            choices: [mapChoice(dbChoice)]
+            choices: [mapChoice(dbChoice, dbRoom.type)]
         });
     }),
     nextStep: RequireAuth(async (event) => {
