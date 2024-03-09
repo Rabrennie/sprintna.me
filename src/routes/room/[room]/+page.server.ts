@@ -93,7 +93,7 @@ export const actions = {
         if (dbRoom.type === 'albums') {
             const token = await Spotify.getToken();
             const album = await Spotify.singleAlbum(result.data.id, token);
-            const src = album?.images?.at(-1)?.url;
+            const src = album?.images?.find((i) => i.width >= 300 && i.width <= 600)?.url;
 
             if (!album || !src) {
                 return fail(400, { error: 'Album does not exist' });
