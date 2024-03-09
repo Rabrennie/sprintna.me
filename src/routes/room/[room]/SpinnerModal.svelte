@@ -15,6 +15,7 @@
             items={choices.map((c) => c.choice.imageUrl)}
             target={choices.findIndex((c) => c.userId === eliminating.userId)}
             on:complete
+            type={$roomStore?.type}
         />
     </div>
 </Modal>
