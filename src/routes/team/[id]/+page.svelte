@@ -21,6 +21,8 @@
     $: leaderboardData = data.team.users
         .map((u) => ({ image: u.image, name: u.name, count: u._count.choices }))
         .sort((a, b) => b.count - a.count);
+
+    $: console.log(data);
 </script>
 
 <svelte:head>
@@ -31,32 +33,43 @@
     <div class="navbar mt-4 p-0">
         <div class="navbar-start">
             <div class="dropdown">
-                <label tabindex="0" class="btn btn-ghost btn-circle">
+                <label
+                    tabindex="0"
+                    class="normal-case text-3xl text-yellow-300 cursor-pointer flex flex-row items-center gap-2"
+                >
+                    {$page.data.team.name}
                     <svg
                         xmlns="http://www.w3.org/2000/svg"
-                        class="h-5 w-5"
                         fill="none"
                         viewBox="0 0 24 24"
+                        stroke-width="1.5"
                         stroke="currentColor"
-                        ><path
+                        class="w-6 h-6 text-slate-500"
+                    >
+                        <path
                             stroke-linecap="round"
                             stroke-linejoin="round"
-                            stroke-width="2"
-                            d="M4 6h16M4 12h16M4 18h7"
-                        /></svg
-                    >
+                            d="M8.25 15 12 18.75 15.75 15m-7.5-6L12 5.25 15.75 9"
+                        />
+                    </svg>
                 </label>
                 <ul
                     tabindex="0"
-                    class="menu menu-sm dropdown-content mt-3 z-[1] p-2 shadow bg-base-100 rounded-box w-52"
-                >
-                    <li><button on:click={() => inviteModal.toggle()}>Invite Users</button></li>
+                    class="menu menu-sm dropdown-content bg-base-200 w-56 rounded shadow mt-3 z-[1]">
+                    {#if $page.data.teams.length > 1}
+                        {#each $page.data.teams as team}
+                            <li>
+                                <a href={`/team/${team.id}`}>{team.name}</a>
+                            </li>
+                        {/each}
+                    {/if}
+                    <li class="{ $page.data.teams.length > 1 ? 'border-t border-slate-700': ''}">
+                        <button on:click={() => inviteModal.toggle()}>Invite Users</button>
+                    </li>
                 </ul>
             </div>
         </div>
-        <div class="navbar-center">
-            <div class="normal-case text-3xl text-yellow-300">{$page.data.team.name}</div>
-        </div>
+        <div class="navbar-center" />
         <div class="navbar-end">
             <div class="avatar-group -space-x-6 overflow-visible hidden md:flex">
                 {#each $page.data.team.users as user}
