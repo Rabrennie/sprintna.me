@@ -26,6 +26,7 @@
 
     export let items: string[] = [];
     export let target: number = 0;
+    export let type: 'albums' | 'movies' = 'albums';
 
     let myEl: HTMLDivElement;
 
@@ -63,7 +64,7 @@
                 <image
                     href={item}
                     height={500}
-                    width={500}
+                    width={type === 'albums' ? 500 : 750}
                     x={0}
                     y={0}
                     transform=""
@@ -73,10 +74,12 @@
                 />
                 <image
                     href={item}
-                    height={250}
-                    width={250}
-                    x={250}
-                    y={Math.min(250, (positions[i][0].y + positions[i][1].y) / 2 - 125)}
+                    height={type === 'albums' ? 250 : 400}
+                    width={type === 'albums' ? 250 : 400}
+                    x={type === 'albums' ? 250 : 175}
+                    y={type == 'albums'
+                        ? Math.min(250, (positions[i][0].y + positions[i][1].y) / 2 - 125)
+                        : Math.min(250, (positions[i][0].y + positions[i][1].y) / 2 - 200)}
                     transform=""
                     clip-path="url(#clip{i})"
                 />
