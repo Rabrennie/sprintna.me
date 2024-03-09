@@ -51,8 +51,13 @@ const getTeamOrError = async (event: RequestEvent) => {
 const loadFunction: Authenticated<PageServerLoad> = async (event) => {
     const team = await getTeamOrError(event);
 
+    const teams = await db.team.findMany({
+        where: { users: { some: { id: event.locals.user.id } } }
+    });
+
     return {
-        team
+        team,
+        teams
     };
 };
 
