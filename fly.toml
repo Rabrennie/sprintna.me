@@ -6,7 +6,7 @@ kill_timeout = 5
 processes = []
 
 [mounts]
-  source="sprintdata"
+  source="sprintdata2"
   destination="/data"
 
 [build.args]
