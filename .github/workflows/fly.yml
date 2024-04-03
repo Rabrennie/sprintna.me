@@ -37,4 +37,4 @@ jobs:
           echo -n "$secrets" | flyctl secrets import --stage
           flyctl secrets list
       - name: Deploy to Fly.io
-        run: flyctl deploy --remote-only
+        run: flyctl deploy --remote-only --region lhr
